@@ -86,6 +86,8 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
         });
     }
 
+    const degreeText = (n: number) => (n === 1 ? t("corridorsOne") : t("corridorsN", { n }));
+
     const nodes: MapFlowNode[] = building.data.nodes.map((node) => {
         const isBlocked = unavailable(node.id);
         const isStart = node.id === start;
@@ -109,7 +111,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 startText: t("startTag"),
                 typeText: typeName,
                 bannerText: t(node.type === "exit" ? "closedExit" : "blockedNode"),
-                descText: `${node.id} · ${t("corridorsN", { n: building.graph.adjacency.get(node.id)!.length })}`,
+                descText: `${node.id} · ${degreeText(building.graph.adjacency.get(node.id)!.length)}`,
                 degree: localizeDigits(building.graph.adjacency.get(node.id)!.length, lang),
                 routeCost: costAt.has(node.id) ? localizeDigits(costAt.get(node.id)!, lang) : null,
                 onActivate: onNodeActivate,
