@@ -40,8 +40,9 @@ build command `npm run build`, output directory `dist`.
   readable labels and visible corridor costs.
 - **Select & calculate** — choose a start by clicking a room/junction or from the list; the
   lowest-cost route is highlighted with its node sequence, exit and total cost.
-- **Change conditions** — "Toggle hazards" mode: click a room/junction to block it, a corridor
-  (or its cost badge) to block it, an exit to close it; click again to undo. Each state has its own look.
+- **Change conditions** — corridors (line or cost badge) and exits block / close with one click in any mode;
+  rooms and junctions are blocked in "Toggle hazards" mode (a rose banner and frame show it, Done returns to
+  Set start). Click again to undo. Each state has its own look.
 - **Update & reset** — every change recalculates immediately; Reset restores the file's `initial_state`.
 - **Failure cases** — "No route available" and "Starting location blocked".
 - **Two languages** — every label, button, status, error and instruction in English and Bangla

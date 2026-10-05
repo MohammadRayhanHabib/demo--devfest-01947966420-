@@ -224,21 +224,21 @@ export default function App() {
     const handleNodeActivate = useCallback(
         (id: string) => {
             if (!building) return;
-            if (mode === "start") return handleStartChange(id);
             const node = building.graph.nodeById.get(id)!;
-            commitHazards((h) =>
-                node.type === "exit" ? { ...h, closedExits: toggled(h.closedExits, id) } : { ...h, blockedNodes: toggled(h.blockedNodes, id) },
-            );
+            // Exits can never be a start, so they close/reopen in either mode.
+            if (node.type === "exit") return commitHazards((h) => ({ ...h, closedExits: toggled(h.closedExits, id) }));
+            if (mode === "start") return handleStartChange(id);
+            commitHazards((h) => ({ ...h, blockedNodes: toggled(h.blockedNodes, id) }));
         },
         [building, mode, handleStartChange, commitHazards],
     );
 
     const handleEdgeToggle = useCallback(
         (id: string) => {
-            if (mode !== "hazard") return showToast(t("switchToHazard"));
+            // Corridors can never be a start, so they block/unblock in either mode.
             commitHazards((h) => ({ ...h, blockedEdges: toggled(h.blockedEdges, id) }));
         },
-        [mode, showToast, t, commitHazards],
+        [commitHazards],
     );
 
     const removeHazard = useCallback(
@@ -458,12 +458,51 @@ export default function App() {
                         </button>
                     </nav>
 
+                    {/* Mode banner: always says which mode is on; hazard mode also frames the canvas in rose. */}
+                    {building && mode === "hazard" && (
+                        <div aria-hidden="true" className="animate-fade-up pointer-events-none absolute inset-0 z-[5] border-2 border-rose-400" />
+                    )}
+                    {building && (
+                        <div className="pointer-events-none absolute inset-x-0 bottom-[84px] z-10 flex justify-center px-4 lg:top-4 lg:bottom-auto">
+                            <div
+                                key={mode}
+                                role="status"
+                                className={cx(
+                                    "animate-fade-up pointer-events-auto flex max-w-full items-center gap-2.5 rounded-xl py-1.5 pr-1.5 pl-3 text-[13px] ring-1",
+                                    mode === "hazard"
+                                        ? "bg-rose-600 text-white ring-rose-600 shadow-[0_6px_16px_-8px_rgba(225,29,72,0.7)]"
+                                        : "bg-white text-neutral-700 ring-neutral-200 shadow-[0_1px_2px_rgba(10,10,10,0.06)]",
+                                )}
+                            >
+                                {mode === "hazard" ? (
+                                    <Ban aria-hidden="true" className="size-4 shrink-0" />
+                                ) : (
+                                    <MousePointer2 aria-hidden="true" className="size-4 shrink-0" />
+                                )}
+                                <span className="min-w-0 leading-snug">
+                                    <strong className="font-semibold">{t(mode === "start" ? "modeStart" : "modeHazard")}</strong>
+                                    <span className={cx(mode === "hazard" ? "text-rose-50" : "text-neutral-500")}>
+                                        {" · "}
+                                        {t(mode === "start" ? "hintStart" : "hintHazard")}
+                                    </span>
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setMode(mode === "hazard" ? "start" : "hazard")}
+                                    className={cx(
+                                        "shrink-0 cursor-pointer rounded-lg px-2.5 py-1 text-[13px] font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white",
+                                        mode === "hazard" ? "bg-white text-rose-700 hover:bg-rose-50" : "bg-neutral-950 text-white hover:bg-neutral-800",
+                                    )}
+                                >
+                                    {mode === "hazard" ? t("doneBtn") : t("modeHazard")}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Control pill */}
                     {building && (
                         <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex flex-col items-center gap-2 px-4">
-                            <p key={mode} className="animate-fade-up max-w-full rounded-lg bg-white px-3 py-1.5 text-center text-[13px] text-neutral-600 ring-1 ring-neutral-200 sm:max-w-lg">
-                                {t(mode === "start" ? "hintStart" : "hintHazard")}
-                            </p>
                             <div className={cx("pointer-events-auto flex items-center gap-1 rounded-2xl p-1.5", floating)}>
                                 <button
                                     type="button"
