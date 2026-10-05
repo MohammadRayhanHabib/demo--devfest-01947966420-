@@ -1,6 +1,6 @@
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
-import { ArrowUpDown, Ban, CircleCheck, DoorClosed, DoorOpen, LogOut, Split, TriangleAlert } from "lucide-react";
-import { memo } from "react";
+import { EllipsisVertical } from "lucide-react";
+import { memo, type ReactNode } from "react";
 import { cx } from "../lib/cx";
 import type { BuildingNode } from "../lib/types";
 
@@ -14,6 +14,8 @@ export type MapNodeData = {
     startText: string;
     typeText: string;
     bannerText: string;
+    /** "R1 · 3 corridors" (localized). */
+    descText: string;
     /** Number of corridors touching this node (localized). */
     degree: string;
     /** Cumulative route cost at this node, when it is on the route (localized). */
@@ -23,37 +25,41 @@ export type MapNodeData = {
 
 export type MapFlowNode = Node<MapNodeData, "building">;
 
-const ICONS = { room: DoorOpen, junction: Split, exit: LogOut };
+export const NODE_EMOJI = { room: "🚪", junction: "🔀", exit: "🏃" } as const;
+
+const TAG_TONE = {
+    green: "bg-emerald-50 text-emerald-700",
+    blue: "bg-sky-50 text-sky-700",
+    indigo: "bg-indigo-50 text-indigo-700",
+    red: "bg-red-50 text-red-600",
+    gray: "bg-gray-100 text-gray-500",
+};
+
+function Tag({ tone, children }: { tone: keyof typeof TAG_TONE; children: ReactNode }) {
+    return <span className={cx("rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold", TAG_TONE[tone])}>{children}</span>;
+}
 
 function frame({ node, isStart, isBlocked, onRoute, isTarget }: MapNodeData) {
-    if (isBlocked) return node.type === "exit" ? "border-dashed border-zinc-300" : "border-rose-200";
-    if (isStart) return "border-blue-400 shadow-[0_0_0_4px_rgba(59,130,246,0.15)]";
-    if (isTarget) return "border-emerald-400 shadow-[0_0_0_4px_rgba(16,185,129,0.16)]";
-    if (onRoute) return "border-indigo-400 shadow-[0_0_0_4px_rgba(99,102,241,0.14)]";
-    return "border-zinc-200";
+    if (isBlocked) return node.type === "exit" ? "border-dashed border-gray-300 opacity-70" : "border-red-400";
+    if (isStart) return "border-dashed border-gray-900 border-[1.5px]";
+    if (isTarget) return "border-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.14)]";
+    if (onRoute) return "border-gray-800";
+    return "border-gray-200";
 }
 
-function statusDot({ node, isStart, isBlocked, onRoute }: MapNodeData) {
-    if (isBlocked) return node.type === "exit" ? "bg-zinc-400" : "bg-rose-500";
-    if (isStart) return "bg-blue-500";
-    if (onRoute && node.type !== "exit") return "bg-indigo-500";
-    return "bg-emerald-500";
-}
-
-/** Node card (pattern from infra/network dashboards: icon box, mono ID, status tile, metric footer). */
+/** Note-card node (pattern from the Mind Palace canvas: emoji + title, description, #tags). */
 export const MapNode = memo(function MapNode({ data }: NodeProps<MapFlowNode>) {
     const { node, isStart, isBlocked } = data;
-    const Icon = ICONS[node.type];
-    const isExit = node.type === "exit";
 
     return (
-        <div className="relative w-[224px]">
+        <div className="relative w-[212px]">
             <Handle type="target" position={Position.Top} className="center-handle" isConnectable={false} />
             <Handle type="source" position={Position.Top} className="center-handle" isConnectable={false} />
 
             {isStart && !isBlocked && (
-                <span className="animate-fade-up pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 rounded-full bg-zinc-600 px-3 py-1 font-mono text-[11px] font-semibold tracking-widest whitespace-nowrap text-white uppercase ring-4 ring-zinc-200">
+                <span className="animate-fade-up pointer-events-none absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2 rounded-md bg-gray-900 px-2.5 py-1 text-[11px] font-medium whitespace-nowrap text-white shadow-md">
                     {data.startText}
+                    <span aria-hidden="true" className="absolute top-full left-1/2 -translate-x-1/2 border-x-[5px] border-t-[5px] border-x-transparent border-t-gray-900" />
                 </span>
             )}
 
@@ -63,59 +69,26 @@ export const MapNode = memo(function MapNode({ data }: NodeProps<MapFlowNode>) {
                 aria-label={data.ariaLabel}
                 title={`${node.label} (${node.id})`}
                 className={cx(
-                    "pointer-events-auto block w-full cursor-pointer overflow-hidden rounded-2xl border bg-white text-left shadow-sm outline-none",
-                    "transition-[border-color,box-shadow,translate] duration-200 hover:-translate-y-0.5 hover:shadow-md",
+                    "pointer-events-auto block w-full cursor-pointer rounded-xl border bg-white p-3 text-left shadow-sm outline-none",
+                    "transition-[border-color,box-shadow,translate,opacity] duration-200 hover:-translate-y-0.5 hover:shadow-md",
                     "focus-visible:ring-4 focus-visible:ring-indigo-300",
                     frame(data),
                     isStart && "animate-pop",
                 )}
             >
-                {isBlocked && (
-                    <span
-                        className={cx(
-                            "flex items-center gap-1.5 border-b px-3 py-1.5 text-[13px] font-semibold",
-                            isExit ? "border-zinc-200 bg-zinc-50 text-zinc-500" : "border-rose-100 bg-rose-50 text-rose-700",
-                        )}
-                    >
-                        {isExit ? <DoorClosed aria-hidden="true" className="size-3.5" /> : <TriangleAlert aria-hidden="true" className="size-3.5" />}
-                        {data.bannerText}
+                <span className="flex items-center gap-2">
+                    <span aria-hidden="true" className="text-base leading-none">
+                        {NODE_EMOJI[node.type]}
                     </span>
-                )}
-
-                <span className="flex items-center gap-3 p-3">
-                    <span
-                        aria-hidden="true"
-                        className={cx(
-                            "grid size-10 shrink-0 place-items-center rounded-xl border",
-                            isExit && !isBlocked
-                                ? "border-emerald-200 bg-emerald-50 text-emerald-600"
-                                : isBlocked && !isExit
-                                  ? "border-rose-200 bg-rose-50 text-rose-600"
-                                  : "border-zinc-200 bg-zinc-50 text-zinc-600",
-                        )}
-                    >
-                        <Icon className="size-5" strokeWidth={2} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                        <span className="block font-mono text-[15px] font-semibold text-zinc-900">{node.id}</span>
-                        <span className="block truncate text-[13px] text-zinc-500">{node.label}</span>
-                    </span>
-                    <span aria-hidden="true" className="relative grid size-8 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-white">
-                        <span className={cx("absolute -top-0.5 -right-0.5 size-2 rounded-full ring-2 ring-white", statusDot(data))} />
-                        {isBlocked ? <Ban className="size-4 text-zinc-400" /> : <CircleCheck className="size-4 text-zinc-400" />}
-                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-gray-900">{node.label}</span>
+                    <EllipsisVertical aria-hidden="true" className="size-4 shrink-0 text-gray-400" />
                 </span>
-
-                <span className="flex items-center justify-between gap-2 border-t border-zinc-100 bg-zinc-50/70 px-3 py-2 font-mono text-xs text-zinc-600">
-                    <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-1.5 py-0.5">
-                        <ArrowUpDown aria-hidden="true" className="size-3.5" />
-                        {data.degree}
-                    </span>
-                    {data.routeCost !== null ? (
-                        <span className="rounded-md bg-indigo-600 px-1.5 py-0.5 text-white">Σ {data.routeCost}</span>
-                    ) : (
-                        <span className="rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-zinc-500">{data.typeText}</span>
-                    )}
+                <span className="mt-1.5 block text-xs leading-snug text-gray-500">{data.descText}</span>
+                <span className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                    <Tag tone="green">#{node.id}</Tag>
+                    <Tag tone={node.type === "exit" ? "green" : "blue"}>#{data.typeText}</Tag>
+                    {isBlocked && <Tag tone={node.type === "exit" ? "gray" : "red"}>#{data.bannerText}</Tag>}
+                    {data.routeCost !== null && <Tag tone="indigo">Σ {data.routeCost}</Tag>}
                 </span>
             </button>
         </div>
