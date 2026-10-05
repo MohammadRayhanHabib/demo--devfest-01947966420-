@@ -64,7 +64,12 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
             <EdgeLabelRenderer>
                 <button
                     type="button"
-                    onClick={() => data.onToggle(data.edge.id)}
+                    onClick={(e) => {
+                        // The label is portalled but React still bubbles the click to the edge,
+                        // whose own click handler would toggle the corridor a second time.
+                        e.stopPropagation();
+                        data.onToggle(data.edge.id);
+                    }}
                     aria-label={data.ariaLabel}
                     title={data.ariaLabel}
                     style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`, pointerEvents: "all" }}
