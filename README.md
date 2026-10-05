@@ -10,7 +10,7 @@ blocked. Works in **English and Bangla**.
 
 | | |
 |---|---|
-| **Name** | _your full name_ |
+| **Name** |Mohammad rayhan habib|
 | **Registration number** | 01947966420 |
 | **Live link** | https://mohammadrayhanhabib.github.io/demo--devfest-01947966420-/ |
 
