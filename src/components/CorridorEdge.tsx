@@ -26,7 +26,7 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
     const data = props.data!;
     const [path, labelX, labelY] = getStraightPath({ sourceX, sourceY, targetX, targetY });
 
-    const stroke = data.blocked ? "#dc2626" : data.onRoute ? "#fed7aa" : "#94a3b8";
+    const stroke = data.blocked ? "#e11d48" : data.onRoute ? "#a7f3d0" : "#94a3b8";
     const drawPath = data.reversed
         ? `M${targetX},${targetY} L${sourceX},${sourceY}`
         : `M${sourceX},${sourceY} L${targetX},${targetY}`;
@@ -66,9 +66,9 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                         "text-sm font-bold tabular-nums shadow-sm outline-none transition-colors duration-200",
                         "focus-visible:ring-4 focus-visible:ring-indigo-400",
                         data.blocked
-                            ? "border-red-500 bg-red-50 text-red-700"
+                            ? "border-rose-500 bg-rose-50 text-rose-700"
                             : data.onRoute
-                              ? "border-orange-500 bg-orange-500 text-white"
+                              ? "border-emerald-600 bg-emerald-600 text-white"
                               : "border-slate-300 bg-white text-slate-700 hover:border-slate-500",
                         data.dead && "opacity-40",
                     )}

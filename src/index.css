@@ -54,7 +54,6 @@ html[lang="bn"] body {
 
 /* Section headings: uppercase eyebrow in English, plain in Bangla. */
 .card-title {
-    margin-bottom: 0.75rem;
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -84,7 +83,7 @@ html[lang="bn"] .card-title {
 /* Route highlight draws itself along the path, edge by edge. */
 .route-draw {
     fill: none;
-    stroke: #f97316;
+    stroke: #10b981;
     stroke-width: 8;
     stroke-linecap: round;
     stroke-dasharray: 1;

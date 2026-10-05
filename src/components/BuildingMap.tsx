@@ -6,6 +6,7 @@ import {
     getViewportForBounds,
     type EdgeTypes,
     type NodeTypes,
+    type FitViewOptions,
     type ReactFlowInstance,
 } from "@xyflow/react";
 import { toPng } from "html-to-image";
@@ -32,10 +33,12 @@ type Props = {
     t: Translate;
     onNodeActivate: (id: string) => void;
     onEdgeToggle: (id: string) => void;
+    /** Keeps nodes clear of the floating panel/toolbar when fitting the view. */
+    fitPadding?: FitViewOptions["padding"];
     ref?: Ref<MapHandle>;
 };
 
-export function BuildingMap({ building, hazards, start, route, mode, lang, t, onNodeActivate, onEdgeToggle, ref }: Props) {
+export function BuildingMap({ building, hazards, start, route, mode, lang, t, onNodeActivate, onEdgeToggle, fitPadding, ref }: Props) {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const flowRef = useRef<ReactFlowInstance<MapFlowNode, CorridorFlowEdge> | null>(null);
     const positions = useMemo(() => layoutPositions(building.data.nodes), [building]);
@@ -72,6 +75,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 onRoute: routeInfo.nodes.has(node.id),
                 isTarget: route.status === "ok" && route.exit === node.id,
                 ariaLabel: parts.join(", "),
+                startText: t("startTag"),
                 onActivate: onNodeActivate,
             },
         };
@@ -144,14 +148,14 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
     return (
         <div ref={wrapperRef} className={cx("h-full w-full", mode === "hazard" ? "mode-hazard" : "mode-start")}>
             <ReactFlow<MapFlowNode, CorridorFlowEdge>
-                key={building.loadId}
+                key={`${building.loadId}:${JSON.stringify(fitPadding)}`}
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 nodeOrigin={[0.5, 0.5]}
                 fitView
-                fitViewOptions={{ padding: 0.18 }}
+                fitViewOptions={{ padding: fitPadding, maxZoom: 1.15 }}
                 minZoom={0.2}
                 maxZoom={2.5}
                 nodesDraggable={false}
@@ -164,7 +168,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                     flowRef.current = instance;
                 }}
             >
-                <Background variant={BackgroundVariant.Dots} gap={22} size={1.6} color="#cbd5e1" />
+                <Background variant={BackgroundVariant.Lines} gap={40} color="#e8edf3" />
                 <Controls showInteractive={false} position="bottom-right" />
             </ReactFlow>
         </div>
