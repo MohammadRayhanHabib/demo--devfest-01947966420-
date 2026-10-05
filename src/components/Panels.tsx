@@ -194,42 +194,73 @@ export function RouteCard({ building, route, lang, t }: RouteProps) {
     );
 }
 
-/** Floating route summary over the map (pattern from komoot / Felt map overlays on Mobbin). */
-export function RouteChip({ route, start, lang, t }: { route: RouteResult; start: string | null; lang: Lang; t: Translate }) {
-    const base =
-        "animate-fade-up absolute top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] items-center gap-3 rounded-2xl border bg-white/95 px-3.5 py-2.5 shadow-lg backdrop-blur";
+/** Run-style route header (pattern from the Browserbase run view on Mobbin): status, meta chips, cost bar. */
+export function RouteOverview({ route, start, lang, t }: { route: RouteResult; start: string | null; lang: Lang; t: Translate }) {
+    const num = (v: number) => localizeDigits(v, lang);
+    const status =
+        route.status === "ok"
+            ? { text: t("routeFound"), tone: "bg-emerald-50 text-emerald-700 ring-emerald-200", dot: "bg-emerald-500" }
+            : route.status === "idle"
+              ? { text: t("waitingStart"), tone: "bg-slate-100 text-slate-600 ring-slate-200", dot: "bg-slate-400" }
+              : {
+                    text: t(route.status === "no-route" ? "noRoute" : "startBlocked"),
+                    tone: "bg-red-50 text-red-700 ring-red-200",
+                    dot: "bg-red-500",
+                };
+    const chip = "inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-sm text-slate-600";
 
-    if (route.status === "ok") {
-        return (
-            <div key={route.path.join(">")} className={cx(base, "border-orange-200")}>
-                <span className="flex items-center gap-1.5 text-sm font-bold">
-                    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-orange-500 px-1 text-[11px] text-white">{start}</span>
-                    <span aria-hidden="true" className="text-orange-400">
-                        →
-                    </span>
-                    <span className="grid h-6 min-w-6 place-items-center rounded-md bg-emerald-600 px-1 text-[11px] text-white">{route.exit}</span>
-                </span>
-                <span aria-hidden="true" className="h-6 w-px bg-slate-200" />
-                <span className="text-sm text-slate-500">
-                    {t("costLabel")} <strong className="text-lg text-orange-600 tabular-nums">{localizeDigits(route.cost, lang)}</strong>
-                </span>
-            </div>
-        );
-    }
-    if (route.status === "no-route" || route.status === "start-blocked") {
-        return (
-            <div key={route.status} className={cx(base, "border-red-200 text-sm font-bold text-red-700")}>
-                <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-red-600 text-xs text-white">
-                    !
-                </span>
-                {t(route.status === "no-route" ? "noRoute" : "startBlocked")}
-            </div>
-        );
-    }
     return (
-        <div className={cx(base, "border-slate-200 text-sm text-slate-500")}>
-            <span aria-hidden="true">📍</span>
-            {t("startPlaceholder")}
+        <div className="mb-3 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+            <div className="flex flex-wrap items-center gap-2">
+                <h2 className="mr-1 text-base font-bold text-slate-900">{t("routeTitle")}</h2>
+                <span
+                    key={route.status}
+                    className={cx("animate-fade-up inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-semibold ring-1", status.tone)}
+                >
+                    <span aria-hidden="true" className={cx("size-2 rounded-full", status.dot)} />
+                    {status.text}
+                </span>
+                {start && (
+                    <span className={chip}>
+                        <span aria-hidden="true">📍</span>
+                        {t("startTag")} <strong className="text-slate-900">{start}</strong>
+                    </span>
+                )}
+                {route.status === "ok" && (
+                    <>
+                        <span className={chip}>
+                            <span aria-hidden="true">🚪</span>
+                            {t("exitLabel")} <strong className="text-slate-900">{route.exit}</strong>
+                        </span>
+                        <span className={chip}>{t("routeMeta", { stops: route.path.length, corridors: route.edges.length })}</span>
+                        <span className={cx(chip, "ml-auto border-orange-200 bg-orange-50 text-orange-800")}>
+                            {t("costLabel")}
+                            <strong className="text-lg leading-none text-orange-600 tabular-nums">{num(route.cost)}</strong>
+                        </span>
+                    </>
+                )}
+            </div>
+
+            {route.status === "ok" && (
+                <div key={route.path.join(">")} className="mt-3 flex h-9 gap-1" role="img" aria-label={t("legsTitle")}>
+                    {route.edges.map((edgeId, i) => (
+                        <div
+                            key={edgeId}
+                            title={`${route.path[i]} → ${route.path[i + 1]} · ${route.legs[i]}`}
+                            style={{ flexGrow: route.legs[i], flexBasis: 0, animationDelay: `${i * 90}ms` }}
+                            className={cx(
+                                "animate-grow-x flex min-w-0 origin-left items-center justify-between gap-1 overflow-hidden rounded-md px-2 text-xs font-semibold text-white",
+                                i % 2 ? "bg-orange-400" : "bg-orange-500",
+                            )}
+                        >
+                            <span className="truncate">
+                                {route.path[i]} → {route.path[i + 1]}
+                            </span>
+                            <span className="tabular-nums">{num(route.legs[i])}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

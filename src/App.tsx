@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { BuildingMap, type MapHandle } from "./components/BuildingMap";
-import { BuildingCard, ErrorCard, HazardsCard, LegendCard, RouteCard, RouteChip, StartCard } from "./components/Panels";
+import { BuildingCard, ErrorCard, HazardsCard, LegendCard, RouteCard, RouteOverview, StartCard } from "./components/Panels";
 import { cx } from "./lib/cx";
 import { translate, type Lang, type Translate } from "./lib/i18n";
 import { buildGraph, findRoute } from "./lib/router";
@@ -309,6 +309,8 @@ export default function App() {
                     onDragLeave={() => setDragging(false)}
                     onDrop={onDrop}
                 >
+                    {building && <RouteOverview route={route} start={start} lang={lang} t={t} />}
+
                     <p className="flex items-start gap-2 px-1 pb-3 text-sm text-slate-500">
                         <span
                             aria-hidden="true"
@@ -337,7 +339,6 @@ export default function App() {
                                     onNodeActivate={handleNodeActivate}
                                     onEdgeToggle={handleEdgeToggle}
                                 />
-                                <RouteChip route={route} start={start} lang={lang} t={t} />
 
                                 {/* Floating tool palette (pattern from Higgsfield / Tana canvases on Mobbin). */}
                                 <div className="absolute inset-x-0 bottom-4 z-10 mx-auto flex w-fit max-w-[calc(100%-6rem)] flex-wrap justify-center whitespace-nowrap items-center gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-lg backdrop-blur">
