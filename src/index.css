@@ -97,6 +97,29 @@ html[lang="bn"] .card-title {
         stroke-dashoffset: 0;
     }
 }
+/* Route connector: dark dashed line that flows in toward the exit once. */
+.route-flow {
+    fill: none;
+    stroke: #111827;
+    stroke-width: 2.25;
+    stroke-dasharray: 7 5;
+    stroke-linecap: round;
+    animation: route-flow 0.9s ease-out both;
+    pointer-events: none;
+}
+@keyframes route-flow {
+    from {
+        stroke-dashoffset: 96;
+        opacity: 0.2;
+    }
+    to {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+.exporting .route-flow {
+    animation: none;
+}
 .exporting .route-draw {
     animation: none;
     stroke-dashoffset: 0;
