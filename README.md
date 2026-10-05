@@ -12,7 +12,7 @@ blocked. Works in **English and Bangla**.
 |---|---|
 | **Name** | _your full name_ |
 | **Registration number** | _your registration number_ |
-| **Live link** | _add the public HTTPS link after deploying_ |
+| **Live link** | https://mohammadrayhanhabib.github.io/demo--devfest-01947966420-/ |
 
 ## Screenshots
 
@@ -29,8 +29,9 @@ npm test         # routing + validation tests
 npm run build    # static build in dist/
 ```
 
-Deploy `dist/` to any static host (Vercel, Netlify, Cloudflare Pages, GitHub Pages).
-On Vercel/Netlify: build command `npm run build`, output directory `dist`.
+Deployed automatically to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`
+(installs, runs the tests, builds, publishes `dist/`). Any static host works too:
+build command `npm run build`, output directory `dist`.
 
 ## Main features (all done)
 
@@ -56,6 +57,9 @@ sequence (case-sensitive, plain string comparison).
 
 ## Bonus features
 
+- Undo / Redo for hazard changes (buttons and Ctrl+Z / Ctrl+Shift+Z); Reset is undoable
+- Focus route: the camera zooms onto the current route
+- Layers tab: every place and corridor as a keyboard-reachable list (sets the start or toggles hazards)
 - PNG export of the map
 - Accessible controls: keyboard-focusable nodes and cost badges with screen-reader labels,
   start dropdown, removable hazard chips, live result announcements
@@ -70,20 +74,15 @@ sequence (case-sensitive, plain string comparison).
 - Very dense graphs (close to 60 nodes) can have overlapping labels; zoom in to read them.
 - The PNG export uses system fonts.
 
-## UI design references (Mobbin)
+## UI design references
 
-- Full-screen map with a floating route panel and A/B waypoints — komoot
-- Status line ("Route found") and breadcrumb top bar — OpenAI Platform
-- Cost-by-corridor bar — Browserbase run view
-- Itinerary-style route steps (start pin, numbered stops, arrival) — GetYourGuide
-- Hazard alert cards with filter chips and Reopen — Nextdoor
-- Floating map legend — Felt
-- Floating map tool palette — Higgsfield / Tana
-- Neutral dashboard look (sidebar switcher, breadcrumb, chip row, node cards with status dots) — infra network dashboard reference
+- Full-screen editor layout like Figma, premium workflow-canvas styling after the Sensa reference (type pill above each card, icon tile, inset status well, footer metric, port dots, tool rail, bottom control pill, tabbed inspector)
+- Black and white theme: ink-black primary actions, route and start; color kept for meaning only (rose = blocked, green = open exit, type dots on the card pills)
+- Earlier explorations used Mobbin references (komoot, Browserbase, GetYourGuide, Nextdoor, Felt)
 
 ## Tech
 
-Vite · React 19 · TypeScript · Tailwind CSS 4 · React Flow (`@xyflow/react`) · lucide-react · Vitest
+Vite · React 19 · TypeScript · Tailwind CSS 4 · React Flow (`@xyflow/react`) · lucide-react · Vitest · GitHub Pages
 
 ## AI tools used
 
