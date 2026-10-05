@@ -6,6 +6,19 @@ import type { Hazards, LoadedBuilding, RouteResult, ValidationError } from "../l
 
 const MAX_ERRORS = 8;
 
+const PinIcon = () => (
+    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 21s-6-5.6-6-11a6 6 0 1 1 12 0c0 5.4-6 11-6 11z" />
+        <circle cx="12" cy="10" r="2.2" />
+    </svg>
+);
+
+const ExitIcon = () => (
+    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" />
+    </svg>
+);
+
 function Card({ title, children, className }: { title?: string; children: ReactNode; className?: string }) {
     return (
         <section className={cx("rounded-2xl border border-slate-200 bg-white p-4 shadow-sm", className)}>
@@ -145,7 +158,8 @@ export function RouteCard({ building, route, lang, t }: RouteProps) {
 
                 <p className="mt-3 font-mono text-sm break-words text-slate-700">{route.path.join(" → ")}</p>
 
-                <ol className="mt-2">
+                {/* Itinerary timeline (pattern from GetYourGuide on Mobbin). */}
+                <ol className="mt-4">
                     {route.path.map((id, i) => {
                         const node = nodeById.get(id)!;
                         const isFirst = i === 0;
@@ -153,28 +167,34 @@ export function RouteCard({ building, route, lang, t }: RouteProps) {
                         return (
                             <li
                                 key={id}
-                                className="animate-fade-up relative flex items-center gap-3 py-1.5"
+                                className="animate-fade-up relative flex gap-3 pb-4 last:pb-0"
                                 style={{ animationDelay: `${i * 60}ms` }}
                             >
-                                {!isLast && <span aria-hidden="true" className="absolute top-9 -bottom-1.5 left-3.5 w-0.5 bg-orange-200" />}
+                                {!isLast && (
+                                    <span aria-hidden="true" className="absolute top-8 bottom-0 left-[14.5px] w-[3px] rounded-full bg-orange-500" />
+                                )}
                                 <span
                                     aria-hidden="true"
                                     className={cx(
-                                        "relative grid size-7 shrink-0 place-items-center border-2 text-xs font-bold",
-                                        isFirst && "rounded-full border-orange-500 bg-orange-500 text-white",
-                                        isLast && "rounded-lg border-emerald-600 bg-emerald-600 text-white",
-                                        !isFirst && !isLast && "rounded-full border-orange-300 bg-white text-orange-700",
+                                        "relative z-10 grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold",
+                                        isFirst && "border-2 border-orange-500 bg-white text-orange-600",
+                                        isLast && "bg-orange-500 text-white ring-4 ring-orange-100",
+                                        !isFirst && !isLast && "bg-slate-900 text-white",
                                     )}
                                 >
-                                    {num(i + 1)}
+                                    {isFirst ? <PinIcon /> : isLast ? <ExitIcon /> : num(i)}
                                 </span>
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-semibold text-slate-900">{id}</p>
-                                    <p className="truncate text-xs text-slate-500">{node.label}</p>
+                                <div className="min-w-0 flex-1 pt-0.5">
+                                    {(isFirst || isLast) && (
+                                        <p className="text-xs font-semibold text-orange-700">{t(isFirst ? "startingAt" : "arriveAt")}</p>
+                                    )}
+                                    <p className="truncate text-[15px] font-semibold text-slate-900">
+                                        {id} <span className="font-normal text-slate-500">· {node.label}</span>
+                                    </p>
                                 </div>
-                                <span className="text-sm font-semibold text-slate-500 tabular-nums">
-                                    {isFirst ? t("startTag") : `+${num(route.legs[i - 1])}`}
-                                </span>
+                                {!isFirst && (
+                                    <span className="pt-0.5 text-sm font-semibold text-slate-500 tabular-nums">+{num(route.legs[i - 1])}</span>
+                                )}
                             </li>
                         );
                     })}
