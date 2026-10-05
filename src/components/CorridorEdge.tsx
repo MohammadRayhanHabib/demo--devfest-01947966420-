@@ -39,7 +39,7 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                 interactionWidth={24}
                 style={{
                     stroke,
-                    strokeWidth: data.onRoute ? 7 : 3,
+                    strokeWidth: data.onRoute ? 9 : 4,
                     strokeDasharray: data.blocked ? "8 6" : undefined,
                     opacity: data.dead ? 0.3 : 1,
                     transition: "stroke 0.25s, stroke-width 0.25s, opacity 0.25s",
@@ -62,8 +62,8 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                     title={data.ariaLabel}
                     style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`, pointerEvents: "all" }}
                     className={cx(
-                        "nodrag nopan absolute flex h-6 min-w-7 cursor-pointer items-center justify-center gap-0.5 rounded-full border px-2",
-                        "text-xs font-bold tabular-nums shadow-sm outline-none transition-colors duration-200",
+                        "nodrag nopan absolute flex h-7 min-w-8 cursor-pointer items-center justify-center gap-0.5 rounded-full border-2 px-2.5",
+                        "text-sm font-bold tabular-nums shadow-sm outline-none transition-colors duration-200",
                         "focus-visible:ring-4 focus-visible:ring-indigo-400",
                         data.blocked
                             ? "border-red-500 bg-red-50 text-red-700"

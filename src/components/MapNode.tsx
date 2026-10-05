@@ -16,9 +16,9 @@ export type MapNodeData = {
 export type MapFlowNode = Node<MapNodeData, "building">;
 
 const SHAPE = {
-    room: "size-12 rounded-full",
-    junction: "size-10 rotate-45 rounded-lg",
-    exit: "h-11 w-14 rounded-xl",
+    room: "size-14 rounded-full",
+    junction: "size-12 rotate-45 rounded-xl",
+    exit: "h-12 w-16 rounded-xl",
 };
 
 function palette({ node, isBlocked, onRoute, isTarget }: MapNodeData) {
@@ -45,7 +45,7 @@ export const MapNode = memo(function MapNode({ data }: NodeProps<MapFlowNode>) {
                 aria-label={data.ariaLabel}
                 title={`${node.label} (${node.id})`}
                 className={cx(
-                    "pointer-events-auto grid cursor-pointer place-items-center border-2 text-[13px] font-bold shadow-sm outline-none",
+                    "pointer-events-auto grid cursor-pointer place-items-center border-[2.5px] text-[15px] font-bold shadow-sm outline-none",
                     "transition-[background-color,border-color,color,box-shadow,scale] duration-200 hover:scale-110",
                     "focus-visible:ring-4 focus-visible:ring-indigo-400",
                     SHAPE[node.type],
@@ -61,7 +61,7 @@ export const MapNode = memo(function MapNode({ data }: NodeProps<MapFlowNode>) {
                 <span
                     aria-hidden="true"
                     className={cx(
-                        "animate-pop absolute -top-2 -right-2 grid size-5 place-items-center rounded-full border-2 border-white text-[11px] font-bold text-white",
+                        "animate-pop absolute -top-2 -right-2 grid size-6 place-items-center rounded-full border-2 border-white text-xs font-bold text-white",
                         node.type === "exit" ? "bg-slate-500" : "bg-red-600",
                     )}
                 >
@@ -69,7 +69,7 @@ export const MapNode = memo(function MapNode({ data }: NodeProps<MapFlowNode>) {
                 </span>
             )}
 
-            <span className="pointer-events-none absolute top-full left-1/2 mt-1.5 max-w-40 -translate-x-1/2 truncate rounded bg-white/85 px-1 text-[11px] leading-4 whitespace-nowrap text-slate-600">
+            <span className="pointer-events-none absolute top-full left-1/2 mt-2 max-w-48 -translate-x-1/2 truncate rounded bg-white/90 px-1.5 text-[13px] leading-5 font-medium whitespace-nowrap text-slate-600">
                 {node.label}
             </span>
         </div>

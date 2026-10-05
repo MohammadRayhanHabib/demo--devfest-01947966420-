@@ -247,11 +247,11 @@ export default function App() {
     return (
         <div className="min-h-screen bg-slate-100 text-slate-900">
             <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
-                <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+                <div className="mx-auto flex max-w-[1840px] flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-3">
-                        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="size-10" />
+                        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="size-11" />
                         <div>
-                            <h1 className="text-lg leading-tight font-bold">{t("title")}</h1>
+                            <h1 className="text-xl leading-tight font-bold">{t("title")}</h1>
                             <p className="text-sm text-slate-500">{t("subtitle")}</p>
                         </div>
                     </div>
@@ -286,7 +286,7 @@ export default function App() {
                 </div>
             </header>
 
-            <main className="mx-auto grid max-w-[1500px] gap-5 p-4 sm:p-6 lg:grid-cols-[380px_minmax(0,1fr)]">
+            <main className="mx-auto grid max-w-[1840px] items-start gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[400px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[440px_minmax(0,1fr)]">
                 <aside className="order-2 flex flex-col gap-4 lg:order-1">
                     <ErrorCard errors={errors} t={t} onDismiss={() => setErrors([])} />
                     {building && <BuildingCard building={building} t={t} />}
@@ -299,7 +299,7 @@ export default function App() {
 
                 <section
                     className={cx(
-                        "order-1 flex flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm lg:sticky lg:top-24 lg:order-2 lg:h-[calc(100vh-7.5rem)]",
+                        "order-1 flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-[6.5rem] lg:order-2 lg:h-[calc(100vh-8.5rem)] lg:min-h-[640px]",
                         dragging && "ring-4 ring-orange-300",
                     )}
                     onDragOver={(e) => {

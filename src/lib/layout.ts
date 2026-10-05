@@ -5,7 +5,7 @@ import type { BuildingNode } from "./types";
  * datasets using tiny (0–10) or huge (0–5000) ranges look the same. Aspect
  * ratio is preserved; these positions are for display only, never for cost.
  */
-export function layoutPositions(nodes: BuildingNode[], width = 760, height = 480) {
+export function layoutPositions(nodes: BuildingNode[], width = 680, height = 420) {
     const xs = nodes.map((n) => n.x);
     const ys = nodes.map((n) => n.y);
     const minX = Math.min(...xs);
