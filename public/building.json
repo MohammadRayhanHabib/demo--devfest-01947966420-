@@ -18,7 +18,8 @@
     { "id": "e5", "from": "R2", "to": "C3", "cost": 2 },
     { "id": "e6", "from": "C3", "to": "C4", "cost": 2 },
     { "id": "e7", "from": "C4", "to": "E2", "cost": 3 },
-    { "id": "e8", "from": "C2", "to": "C4", "cost": 5 }
+    { "id": "e8", "from": "C2", "to": "C4", "cost": 5 },
+    { "id": "e9", "from": "R1", "to": "R2", "cost": 5 }
   ],
   "initial_state": {
     "blocked_nodes": [],
