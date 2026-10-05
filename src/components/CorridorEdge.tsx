@@ -9,7 +9,7 @@ export type CorridorData = {
     /** Unusable because an end node is blocked / a closed exit. */
     dead: boolean;
     onRoute: boolean;
-    /** Position of this corridor along the route (for the staggered flow-in). */
+    /** Position of this corridor along the route (for the staggered draw). */
     routeIndex: number;
     /** True when the route walks this corridor from `to` to `from`. */
     reversed: boolean;
@@ -27,7 +27,6 @@ function sides(dx: number, dy: number): [Position, Position] {
     return dy >= 0 ? [Position.Bottom, Position.Top] : [Position.Top, Position.Bottom];
 }
 
-/** Dashed connector with a round cost badge in the middle (Mind Palace canvas pattern). */
 export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<CorridorFlowEdge>) {
     const { id, sourceX, sourceY, targetX, targetY } = props;
     const data = props.data!;
@@ -39,10 +38,10 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
         targetX,
         targetY,
         targetPosition: to,
-        borderRadius: 18,
+        borderRadius: 16,
     });
-    const flowPath = data.reversed
-        ? getSmoothStepPath({ sourceX: targetX, sourceY: targetY, sourcePosition: to, targetX: sourceX, targetY: sourceY, targetPosition: from, borderRadius: 18 })[0]
+    const drawPath = data.reversed
+        ? getSmoothStepPath({ sourceX: targetX, sourceY: targetY, sourcePosition: to, targetX: sourceX, targetY: sourceY, targetPosition: from, borderRadius: 16 })[0]
         : path;
 
     return (
@@ -52,16 +51,15 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                 path={path}
                 interactionWidth={24}
                 style={{
-                    stroke: data.onRoute ? "transparent" : data.blocked ? "#ef4444" : "#cbd5e1",
-                    strokeWidth: data.blocked ? 2 : 1.75,
-                    strokeDasharray: data.blocked ? "6 5" : "3 5",
-                    strokeLinecap: "round",
+                    stroke: data.blocked ? "#f43f5e" : data.onRoute ? "#c7d2fe" : "#94a3b8",
+                    strokeWidth: data.onRoute ? 6 : 2.5,
+                    strokeDasharray: data.blocked ? "6 5" : undefined,
                     opacity: data.dead ? 0.35 : 1,
-                    transition: "stroke 0.25s, opacity 0.25s",
+                    transition: "stroke 0.25s, stroke-width 0.25s, opacity 0.25s",
                 }}
             />
             {data.onRoute && (
-                <path key={data.routeKey} d={flowPath} className="route-flow" style={{ animationDelay: `${data.routeIndex * 120}ms` }} />
+                <path key={data.routeKey} d={drawPath} pathLength={1} className="route-draw" style={{ animationDelay: `${data.routeIndex * 140}ms` }} />
             )}
             <EdgeLabelRenderer>
                 <button
@@ -71,17 +69,18 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                     title={data.ariaLabel}
                     style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`, pointerEvents: "all" }}
                     className={cx(
-                        "nodrag nopan absolute grid h-6 min-w-6 cursor-pointer place-items-center rounded-full border-[1.5px] px-1",
-                        "font-mono text-[11px] font-bold tabular-nums outline-none transition-colors duration-200",
+                        "nodrag nopan absolute flex h-6 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-md border px-1.5",
+                        "font-mono text-xs font-semibold tabular-nums shadow-sm outline-none transition-colors duration-200",
                         "focus-visible:ring-4 focus-visible:ring-indigo-300",
                         data.blocked
-                            ? "border-red-400 bg-red-50 text-red-600 line-through"
+                            ? "border-rose-300 bg-rose-50 text-rose-700"
                             : data.onRoute
-                              ? "border-gray-900 bg-gray-900 text-white"
-                              : "border-gray-300 bg-white text-gray-600 hover:border-gray-500",
+                              ? "border-indigo-600 bg-indigo-600 text-white"
+                              : "border-slate-300 bg-white text-slate-700 hover:border-slate-500",
                         data.dead && "opacity-40",
                     )}
                 >
+                    {data.blocked && <span aria-hidden="true">✕</span>}
                     {data.costText}
                 </button>
             </EdgeLabelRenderer>

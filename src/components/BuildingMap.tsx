@@ -1,16 +1,15 @@
 import {
     Background,
     BackgroundVariant,
+    Controls,
     ReactFlow,
     getViewportForBounds,
-    useReactFlow,
     type EdgeTypes,
     type NodeTypes,
     type FitViewOptions,
     type ReactFlowInstance,
 } from "@xyflow/react";
 import { toPng } from "html-to-image";
-import { Maximize, ZoomIn, ZoomOut } from "lucide-react";
 import { useImperativeHandle, useMemo, useRef, type Ref } from "react";
 import { cx } from "../lib/cx";
 import { localizeDigits, type Lang, type Translate } from "../lib/i18n";
@@ -23,27 +22,6 @@ const nodeTypes: NodeTypes = { building: MapNode };
 const edgeTypes: EdgeTypes = { corridor: CorridorEdge };
 
 export type MapHandle = { exportPng: () => Promise<void> };
-
-/** Vertical zoom column on the right edge of the canvas. */
-function ZoomColumn({ t, padding }: { t: Translate; padding: FitViewOptions["padding"] }) {
-    const { zoomIn, zoomOut, fitView } = useReactFlow();
-    const button =
-        "grid size-10 cursor-pointer place-items-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm transition outline-none hover:bg-gray-50 focus-visible:ring-4 focus-visible:ring-indigo-200";
-    const items = [
-        { label: t("zoomIn"), icon: ZoomIn, run: () => zoomIn({ duration: 200 }) },
-        { label: t("zoomOut"), icon: ZoomOut, run: () => zoomOut({ duration: 200 }) },
-        { label: t("fitView"), icon: Maximize, run: () => fitView({ padding, maxZoom: 1, duration: 300 }) },
-    ];
-    return (
-        <div className="absolute top-1/2 right-4 z-10 flex -translate-y-1/2 flex-col gap-2">
-            {items.map(({ label, icon: Icon, run }) => (
-                <button key={label} type="button" aria-label={label} title={label} onClick={() => void run()} className={button}>
-                    <Icon aria-hidden="true" className="size-[18px]" />
-                </button>
-            ))}
-        </div>
-    );
-}
 
 type Props = {
     building: LoadedBuilding;
@@ -86,8 +64,6 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
         });
     }
 
-    const degreeText = (n: number) => (n === 1 ? t("corridorsOne") : t("corridorsN", { n }));
-
     const nodes: MapFlowNode[] = building.data.nodes.map((node) => {
         const isBlocked = unavailable(node.id);
         const isStart = node.id === start;
@@ -111,7 +87,6 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 startText: t("startTag"),
                 typeText: typeName,
                 bannerText: t(node.type === "exit" ? "closedExit" : "blockedNode"),
-                descText: `${node.id} · ${degreeText(building.graph.adjacency.get(node.id)!.length)}`,
                 degree: localizeDigits(building.graph.adjacency.get(node.id)!.length, lang),
                 routeCost: costAt.has(node.id) ? localizeDigits(costAt.get(node.id)!, lang) : null,
                 onActivate: onNodeActivate,
@@ -162,7 +137,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
             wrapperRef.current!.classList.add("exporting");
             try {
                 const dataUrl = await toPng(viewportEl, {
-                    backgroundColor: "#ffffff",
+                    backgroundColor: "#fafafa",
                     width,
                     height,
                     pixelRatio: 2,
@@ -206,8 +181,8 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                     flowRef.current = instance;
                 }}
             >
-                <Background variant={BackgroundVariant.Dots} gap={18} size={1.5} color="#d1d5db" />
-                <ZoomColumn t={t} padding={fitPadding} />
+                <Background variant={BackgroundVariant.Dots} gap={20} size={1.4} color="#d4d4d8" />
+                <Controls showInteractive={false} position="bottom-right" />
             </ReactFlow>
         </div>
     );

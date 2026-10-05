@@ -79,7 +79,7 @@ sequence (case-sensitive, plain string comparison).
 - Hazard alert cards with filter chips and Reopen — Nextdoor
 - Floating map legend — Felt
 - Floating map tool palette — Higgsfield / Tana
-- Outliner sidebar, note-card nodes with #tags, dashed connectors with round badges, zoom column — Mind Palace canvas reference
+- Neutral dashboard look (sidebar switcher, breadcrumb, chip row, node cards with status dots) — infra network dashboard reference
 
 ## Tech
 
