@@ -154,8 +154,8 @@ function Waypoints({ building, hazards, start, route, t, onStartChange }: Waypoi
 
 function Stat({ label, value, dark }: { label: string; value: string; dark?: boolean }) {
     return (
-        <div className={cx("rounded-xl border px-3 py-2.5", dark ? "border-zinc-900 bg-zinc-900" : "border-zinc-200 bg-white")}>
-            <p className={cx("text-xs font-medium", dark ? "text-zinc-400" : "text-zinc-500")}>{label}</p>
+        <div className={cx("rounded-xl border px-3 py-2.5", dark ? "border-indigo-600 bg-indigo-600" : "border-zinc-200 bg-white")}>
+            <p className={cx("text-xs font-medium", dark ? "text-indigo-200" : "text-zinc-500")}>{label}</p>
             <p className={cx("mt-0.5 font-mono text-2xl leading-tight font-semibold tabular-nums", dark ? "text-white" : "text-zinc-900")}>{value}</p>
         </div>
     );
@@ -183,7 +183,7 @@ function RouteDetails({ route, building, lang, t }: { route: OkRoute; building: 
                             style={{ flexGrow: route.legs[i], flexBasis: 0, animationDelay: `${i * 90}ms` }}
                             className={cx(
                                 "animate-grow-x flex min-w-0 origin-left items-center justify-between gap-1 overflow-hidden rounded-md px-2 font-mono text-[11px] font-semibold text-white",
-                                i % 2 ? "bg-zinc-500" : "bg-zinc-800",
+                                i % 2 ? "bg-indigo-400" : "bg-indigo-600",
                             )}
                         >
                             <span className="truncate">
@@ -204,14 +204,14 @@ function RouteDetails({ route, building, lang, t }: { route: OkRoute; building: 
                         const isLast = i === route.path.length - 1;
                         return (
                             <li key={id} className="animate-fade-up relative flex gap-3 pb-3.5 last:pb-0" style={{ animationDelay: `${i * 60}ms` }}>
-                                {!isLast && <span aria-hidden="true" className="absolute top-7 bottom-0 left-[13px] w-0.5 bg-zinc-200" />}
+                                {!isLast && <span aria-hidden="true" className="absolute top-7 bottom-0 left-[13px] w-0.5 bg-indigo-200" />}
                                 <span
                                     aria-hidden="true"
                                     className={cx(
                                         "relative z-10 grid size-7 shrink-0 place-items-center rounded-full font-mono text-[11px] font-bold",
                                         isFirst && "bg-blue-600 text-white ring-4 ring-blue-50",
                                         isLast && "bg-emerald-600 text-white ring-4 ring-emerald-50",
-                                        !isFirst && !isLast && "border border-zinc-300 bg-white text-zinc-700",
+                                        !isFirst && !isLast && "border border-indigo-300 bg-white text-indigo-700",
                                     )}
                                 >
                                     {isFirst ? <MapPin className="size-3.5" strokeWidth={2.5} /> : isLast ? <LogOut className="size-3.5" strokeWidth={2.5} /> : num(i)}
@@ -360,7 +360,7 @@ function Legend({ t }: { t: Translate }) {
         { key: "legendJunction", swatch: <span className="size-3.5 rounded-full border border-zinc-300 bg-zinc-100" /> },
         { key: "legendExit", swatch: <span className="h-3.5 w-5 rounded border border-emerald-300 bg-emerald-50" /> },
         { key: "legendStart", swatch: <span className="size-4 rounded-md border-2 border-blue-400 bg-white" /> },
-        { key: "legendRoute", swatch: <span className="h-1 w-6 rounded-full bg-zinc-900" /> },
+        { key: "legendRoute", swatch: <span className="h-1 w-6 rounded-full bg-indigo-600" /> },
         { key: "legendBlocked", swatch: <span className="size-4 rounded-md border border-rose-300 bg-rose-50" /> },
         { key: "legendBlockedEdge", swatch: <span className="w-6 border-t-2 border-dashed border-rose-500" /> },
         { key: "legendClosed", swatch: <span className="h-3.5 w-5 rounded border border-dashed border-zinc-400 bg-zinc-50" /> },

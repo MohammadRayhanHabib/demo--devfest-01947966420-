@@ -51,8 +51,8 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                 path={path}
                 interactionWidth={24}
                 style={{
-                    stroke: data.blocked ? "#f43f5e" : data.onRoute ? "#a1a1aa" : "#d4d4d8",
-                    strokeWidth: data.onRoute ? 3.5 : 2.5,
+                    stroke: data.blocked ? "#f43f5e" : data.onRoute ? "#c7d2fe" : "#94a3b8",
+                    strokeWidth: data.onRoute ? 6 : 2.5,
                     strokeDasharray: data.blocked ? "6 5" : undefined,
                     opacity: data.dead ? 0.35 : 1,
                     transition: "stroke 0.25s, stroke-width 0.25s, opacity 0.25s",
@@ -75,8 +75,8 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                         data.blocked
                             ? "border-rose-300 bg-rose-50 text-rose-700"
                             : data.onRoute
-                              ? "border-zinc-900 bg-zinc-900 text-white"
-                              : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500",
+                              ? "border-indigo-600 bg-indigo-600 text-white"
+                              : "border-slate-300 bg-white text-slate-700 hover:border-slate-500",
                         data.dead && "opacity-40",
                     )}
                 >

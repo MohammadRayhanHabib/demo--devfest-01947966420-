@@ -29,14 +29,14 @@ function frame({ node, isStart, isBlocked, onRoute, isTarget }: MapNodeData) {
     if (isBlocked) return node.type === "exit" ? "border-dashed border-zinc-300" : "border-rose-200";
     if (isStart) return "border-blue-400 shadow-[0_0_0_4px_rgba(59,130,246,0.15)]";
     if (isTarget) return "border-emerald-400 shadow-[0_0_0_4px_rgba(16,185,129,0.16)]";
-    if (onRoute) return "border-zinc-900 shadow-[0_0_0_3px_rgba(24,24,27,0.07)]";
+    if (onRoute) return "border-indigo-400 shadow-[0_0_0_4px_rgba(99,102,241,0.14)]";
     return "border-zinc-200";
 }
 
 function statusDot({ node, isStart, isBlocked, onRoute }: MapNodeData) {
     if (isBlocked) return node.type === "exit" ? "bg-zinc-400" : "bg-rose-500";
     if (isStart) return "bg-blue-500";
-    if (onRoute && node.type !== "exit") return "bg-zinc-900";
+    if (onRoute && node.type !== "exit") return "bg-indigo-500";
     return "bg-emerald-500";
 }
 
@@ -112,7 +112,7 @@ export const MapNode = memo(function MapNode({ data }: NodeProps<MapFlowNode>) {
                         {data.degree}
                     </span>
                     {data.routeCost !== null ? (
-                        <span className="rounded-md bg-zinc-900 px-1.5 py-0.5 text-white">Σ {data.routeCost}</span>
+                        <span className="rounded-md bg-indigo-600 px-1.5 py-0.5 text-white">Σ {data.routeCost}</span>
                     ) : (
                         <span className="rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-zinc-500">{data.typeText}</span>
                     )}

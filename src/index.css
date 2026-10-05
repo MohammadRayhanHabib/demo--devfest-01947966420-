@@ -84,8 +84,8 @@ html[lang="bn"] .card-title {
 /* Route highlight draws itself along the path, edge by edge. */
 .route-draw {
     fill: none;
-    stroke: #18181b;
-    stroke-width: 3.5;
+    stroke: #4f46e5;
+    stroke-width: 4;
     stroke-linecap: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
