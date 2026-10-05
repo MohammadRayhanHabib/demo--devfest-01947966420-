@@ -300,31 +300,31 @@ export default function App() {
     const railButton = (active: boolean) =>
         cx(
             "relative grid size-10 cursor-pointer place-items-center rounded-xl transition-colors outline-none focus-visible:ring-4 focus-visible:ring-brand-200",
-            active ? "bg-brand-50 text-brand-700" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+            active ? "bg-brand-50 text-brand-700" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900",
         );
     const pillButton =
-        "grid size-10 cursor-pointer place-items-center rounded-xl text-slate-600 transition-colors outline-none hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent focus-visible:ring-4 focus-visible:ring-brand-200";
-    const floating = "border border-slate-200 bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)]";
+        "grid size-10 cursor-pointer place-items-center rounded-xl text-neutral-600 transition-colors outline-none hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent focus-visible:ring-4 focus-visible:ring-brand-200";
+    const floating = "border border-neutral-200 bg-white shadow-[0_1px_2px_rgba(10,10,10,0.06)]";
 
     return (
-        <div className="flex min-h-dvh flex-col bg-white text-slate-900 lg:h-dvh lg:overflow-hidden">
+        <div className="flex min-h-dvh flex-col bg-white text-neutral-900 lg:h-dvh lg:overflow-hidden">
             {/* Top bar */}
-            <header className="relative z-30 flex h-14 min-w-0 shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 sm:gap-3 sm:px-4">
+            <header className="relative z-30 flex h-14 min-w-0 shrink-0 items-center justify-between gap-2 border-b border-neutral-200 bg-white px-3 sm:gap-3 sm:px-4">
                 <div className="flex min-w-0 items-center gap-3">
-                    <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="size-7 shrink-0" />
+                    <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="size-8 shrink-0" />
                     <span className="text-[15px] font-semibold tracking-[-0.01em] whitespace-nowrap">{t("title")}</span>
                     {building && (
                         <>
-                            <span aria-hidden="true" className="hidden h-5 w-px bg-slate-200 sm:block" />
+                            <span aria-hidden="true" className="hidden h-5 w-px bg-neutral-200 sm:block" />
                             <button
                                 type="button"
                                 onClick={openFilePicker}
                                 title={t("switchBuilding")}
-                                className="hidden min-w-0 cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-[13px] text-slate-600 transition-colors outline-none hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand-500 sm:flex"
+                                className="hidden min-w-0 cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-[13px] text-neutral-600 transition-colors outline-none hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-brand-500 sm:flex"
                             >
-                                <FileJson aria-hidden="true" className="size-4 shrink-0 text-slate-400" />
-                                <span className="truncate font-medium text-slate-800">{building.data.building}</span>
-                                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] text-slate-500">{building.source}</span>
+                                <FileJson aria-hidden="true" className="size-4 shrink-0 text-neutral-400" />
+                                <span className="truncate font-medium text-neutral-800">{building.data.building}</span>
+                                <span className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-[11px] text-neutral-500">{building.source}</span>
                             </button>
                         </>
                     )}
@@ -336,10 +336,10 @@ export default function App() {
                             key={route.status + (route.status === "ok" ? route.cost : "")}
                             className={cx(
                                 "animate-fade-up hidden items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] font-medium md:inline-flex",
-                                route.status === "ok" ? "bg-brand-50 text-brand-700" : failed ? "bg-rose-50 text-rose-700" : "bg-slate-100 text-slate-600",
+                                route.status === "ok" ? "bg-brand-50 text-brand-700" : failed ? "bg-rose-50 text-rose-700" : "bg-neutral-100 text-neutral-600",
                             )}
                         >
-                            <span aria-hidden="true" className={cx("size-1.5 rounded-full", route.status === "ok" ? "bg-brand-600" : failed ? "bg-rose-500" : "bg-slate-400")} />
+                            <span aria-hidden="true" className={cx("size-1.5 rounded-full", route.status === "ok" ? "bg-brand-600" : failed ? "bg-rose-500" : "bg-neutral-400")} />
                             {route.status === "ok" ? (
                                 <>
                                     <span className="font-mono">
@@ -354,7 +354,7 @@ export default function App() {
                             )}
                         </span>
                     )}
-                    <div role="group" aria-label="Language / ভাষা" className="flex rounded-lg bg-slate-100 p-0.5">
+                    <div role="group" aria-label="Language / ভাষা" className="flex rounded-lg bg-neutral-100 p-0.5">
                         {(["en", "bn"] as const).map((l) => (
                             <button
                                 key={l}
@@ -364,7 +364,7 @@ export default function App() {
                                 onClick={() => setLang(l)}
                                 className={cx(
                                     "cursor-pointer rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-                                    lang === l ? "bg-white text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.08)]" : "text-slate-500 hover:text-slate-800",
+                                    lang === l ? "bg-white text-neutral-900 shadow-[0_1px_2px_rgba(15,23,42,0.08)]" : "text-neutral-500 hover:text-neutral-800",
                                 )}
                             >
                                 {l === "en" ? "EN" : "বাংলা"}
@@ -374,14 +374,14 @@ export default function App() {
                     <button
                         type="button"
                         onClick={() => void loadSample()}
-                        className="hidden h-8 cursor-pointer items-center rounded-lg px-3 text-[13px] font-medium text-slate-600 transition-colors outline-none hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-brand-500 sm:inline-flex"
+                        className="hidden h-8 cursor-pointer items-center rounded-lg px-3 text-[13px] font-medium text-neutral-600 transition-colors outline-none hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-brand-500 sm:inline-flex"
                     >
                         {t("sampleBtn")}
                     </button>
                     <button
                         type="button"
                         onClick={openFilePicker}
-                        className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg bg-brand-600 px-3 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(37,99,235,0.35)] transition-colors outline-none hover:bg-brand-700 focus-visible:ring-4 focus-visible:ring-brand-200"
+                        className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg bg-brand-600 px-3 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(10,10,10,0.3)] transition-colors outline-none hover:bg-brand-700 focus-visible:ring-4 focus-visible:ring-brand-200"
                     >
                         <Upload aria-hidden="true" className="size-3.5" />
                         <span className="sr-only sm:not-sr-only">{t("importBtn")}</span>
@@ -421,6 +421,7 @@ export default function App() {
                             lang={lang}
                             t={t}
                             fitPadding={fitPadding}
+                            compact={!isWide}
                             onNodeActivate={handleNodeActivate}
                             onEdgeToggle={handleEdgeToggle}
                         />
@@ -431,7 +432,7 @@ export default function App() {
                                     <FileJson aria-hidden="true" className="size-5" />
                                 </span>
                                 <p className="mt-3 font-semibold">{t("emptyTitle")}</p>
-                                <p className="mt-1 text-[13px] text-slate-500">{t("emptyBody")}</p>
+                                <p className="mt-1 text-[13px] text-neutral-500">{t("emptyBody")}</p>
                             </div>
                         </div>
                     )}
@@ -451,7 +452,7 @@ export default function App() {
                         >
                             <Ban aria-hidden="true" className="size-[18px]" />
                         </button>
-                        <span aria-hidden="true" className="my-2 w-px bg-slate-100 lg:mx-2 lg:my-1 lg:h-px lg:w-auto" />
+                        <span aria-hidden="true" className="my-2 w-px bg-neutral-100 lg:mx-2 lg:my-1 lg:h-px lg:w-auto" />
                         <button type="button" aria-pressed={tab === "layers"} aria-label={t("tabLayers")} title={t("tabLayers")} onClick={() => setTab((v) => (v === "layers" ? "route" : "layers"))} className={railButton(tab === "layers")}>
                             <Layers aria-hidden="true" className="size-[18px]" />
                         </button>
@@ -460,7 +461,7 @@ export default function App() {
                     {/* Control pill */}
                     {building && (
                         <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex flex-col items-center gap-2 px-4">
-                            <p key={mode} className="animate-fade-up max-w-full rounded-lg bg-slate-900/90 px-3 py-1.5 text-center text-[12px] text-white backdrop-blur sm:max-w-lg">
+                            <p key={mode} className="animate-fade-up max-w-full rounded-lg bg-white px-3 py-1.5 text-center text-[13px] text-neutral-600 ring-1 ring-neutral-200 sm:max-w-lg">
                                 {t(mode === "start" ? "hintStart" : "hintHazard")}
                             </p>
                             <div className={cx("pointer-events-auto flex items-center gap-1 rounded-2xl p-1.5", floating)}>
@@ -470,14 +471,14 @@ export default function App() {
                                     disabled={route.status !== "ok"}
                                     aria-label={t("focusRoute")}
                                     title={t("focusRoute")}
-                                    className="grid size-10 cursor-pointer place-items-center rounded-xl bg-brand-600 text-white shadow-[0_2px_8px_-2px_rgba(37,99,235,0.6)] transition-colors outline-none hover:bg-brand-700 focus-visible:ring-4 focus-visible:ring-brand-200 disabled:cursor-not-allowed disabled:bg-brand-200 disabled:shadow-none"
+                                    className="grid size-10 cursor-pointer place-items-center rounded-xl bg-brand-600 text-white shadow-[0_2px_8px_-2px_rgba(10,10,10,0.5)] transition-colors outline-none hover:bg-brand-700 focus-visible:ring-4 focus-visible:ring-brand-200 disabled:cursor-not-allowed disabled:bg-brand-200 disabled:shadow-none"
                                 >
                                     <Crosshair aria-hidden="true" className="size-[18px]" />
                                 </button>
                                 <button type="button" onClick={reset} aria-label={t("resetBtn")} title={t("resetBtn")} className={pillButton}>
                                     <RotateCcw aria-hidden="true" className="size-[18px]" />
                                 </button>
-                                <span aria-hidden="true" className="mx-1 h-6 w-px bg-slate-200" />
+                                <span aria-hidden="true" className="mx-1 h-6 w-px bg-neutral-200" />
                                 <button type="button" onClick={undo} disabled={history.past.length === 0} aria-label={t("undo")} title={`${t("undo")} (Ctrl+Z)`} className={pillButton}>
                                     <Undo2 aria-hidden="true" className="size-[18px]" />
                                 </button>
@@ -496,7 +497,7 @@ export default function App() {
                             aria-label={t("exportBtn")}
                             title={t("exportBtn")}
                             className={cx(
-                                "absolute right-4 bottom-4 z-10 grid size-10 cursor-pointer place-items-center rounded-xl text-slate-600 transition-colors outline-none hover:text-slate-900 focus-visible:ring-4 focus-visible:ring-brand-200",
+                                "absolute right-4 bottom-4 z-10 grid size-10 cursor-pointer place-items-center rounded-xl text-neutral-600 transition-colors outline-none hover:text-neutral-900 focus-visible:ring-4 focus-visible:ring-brand-200",
                                 floating,
                             )}
                         >
@@ -533,7 +534,7 @@ export default function App() {
 
             <div aria-live="polite" className="pointer-events-none fixed inset-x-0 top-16 z-40 flex justify-center px-4">
                 {toast && (
-                    <p key={toast.id} className="animate-fade-up flex items-center gap-2 rounded-xl bg-slate-900 px-3.5 py-2 text-[13px] font-medium text-white shadow-[0_8px_24px_-8px_rgba(15,23,42,0.45)]">
+                    <p key={toast.id} className="animate-fade-up flex items-center gap-2 rounded-xl bg-neutral-900 px-3.5 py-2 text-[13px] font-medium text-white shadow-[0_8px_24px_-8px_rgba(15,23,42,0.45)]">
                         <CircleCheck aria-hidden="true" className="size-4 text-emerald-400" />
                         {toast.text}
                     </p>
