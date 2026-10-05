@@ -194,6 +194,46 @@ export function RouteCard({ building, route, lang, t }: RouteProps) {
     );
 }
 
+/** Floating route summary over the map (pattern from komoot / Felt map overlays on Mobbin). */
+export function RouteChip({ route, start, lang, t }: { route: RouteResult; start: string | null; lang: Lang; t: Translate }) {
+    const base =
+        "animate-fade-up absolute top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] items-center gap-3 rounded-2xl border bg-white/95 px-3.5 py-2.5 shadow-lg backdrop-blur";
+
+    if (route.status === "ok") {
+        return (
+            <div key={route.path.join(">")} className={cx(base, "border-orange-200")}>
+                <span className="flex items-center gap-1.5 text-sm font-bold">
+                    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-orange-500 px-1 text-[11px] text-white">{start}</span>
+                    <span aria-hidden="true" className="text-orange-400">
+                        →
+                    </span>
+                    <span className="grid h-6 min-w-6 place-items-center rounded-md bg-emerald-600 px-1 text-[11px] text-white">{route.exit}</span>
+                </span>
+                <span aria-hidden="true" className="h-6 w-px bg-slate-200" />
+                <span className="text-sm text-slate-500">
+                    {t("costLabel")} <strong className="text-lg text-orange-600 tabular-nums">{localizeDigits(route.cost, lang)}</strong>
+                </span>
+            </div>
+        );
+    }
+    if (route.status === "no-route" || route.status === "start-blocked") {
+        return (
+            <div key={route.status} className={cx(base, "border-red-200 text-sm font-bold text-red-700")}>
+                <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-red-600 text-xs text-white">
+                    !
+                </span>
+                {t(route.status === "no-route" ? "noRoute" : "startBlocked")}
+            </div>
+        );
+    }
+    return (
+        <div className={cx(base, "border-slate-200 text-sm text-slate-500")}>
+            <span aria-hidden="true">📍</span>
+            {t("startPlaceholder")}
+        </div>
+    );
+}
+
 type HazardKind = "node" | "edge" | "exit";
 
 type HazardsProps = {

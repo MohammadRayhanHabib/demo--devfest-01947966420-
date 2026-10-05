@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { BuildingMap, type MapHandle } from "./components/BuildingMap";
-import { BuildingCard, ErrorCard, HazardsCard, LegendCard, RouteCard, StartCard } from "./components/Panels";
+import { BuildingCard, ErrorCard, HazardsCard, LegendCard, RouteCard, RouteChip, StartCard } from "./components/Panels";
 import { cx } from "./lib/cx";
 import { translate, type Lang, type Translate } from "./lib/i18n";
 import { buildGraph, findRoute } from "./lib/router";
@@ -241,6 +241,8 @@ export default function App() {
         "inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold shadow-sm transition active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 outline-none focus-visible:ring-4 focus-visible:ring-indigo-300";
     const buttonClass = cx(buttonBase, "border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50");
     const primaryButtonClass = cx(buttonBase, "border-slate-900 bg-slate-900 text-white hover:bg-slate-700");
+    const toolClass =
+        "flex cursor-pointer items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold transition outline-none focus-visible:ring-4 focus-visible:ring-indigo-300";
 
     return (
         <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -270,9 +272,6 @@ export default function App() {
                         />
                         <button type="button" className={buttonClass} onClick={() => void loadSample()}>
                             {t("sampleBtn")}
-                        </button>
-                        <button type="button" className={buttonClass} onClick={reset} disabled={!building}>
-                            <span aria-hidden="true">↺</span> {t("resetBtn")}
                         </button>
                         <button
                             type="button"
@@ -310,44 +309,68 @@ export default function App() {
                     onDragLeave={() => setDragging(false)}
                     onDrop={onDrop}
                 >
-                    <div className="flex flex-wrap items-center justify-between gap-3 px-1 pb-2">
-                        <div role="group" aria-label={t("modeStart") + " / " + t("modeHazard")} className="inline-flex rounded-xl bg-slate-100 p-1">
-                            {(["start", "hazard"] as const).map((m) => (
-                                <button
-                                    key={m}
-                                    type="button"
-                                    aria-pressed={mode === m}
-                                    onClick={() => setMode(m)}
-                                    className={cx(
-                                        "flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition outline-none focus-visible:ring-4 focus-visible:ring-indigo-300",
-                                        mode === m ? "bg-white text-slate-900 shadow" : "text-slate-500 hover:text-slate-800",
-                                    )}
-                                >
-                                    <span aria-hidden="true">{m === "start" ? "📍" : "⛔"}</span>
-                                    {t(m === "start" ? "modeStart" : "modeHazard")}
-                                </button>
-                            ))}
-                        </div>
-                        <button type="button" className={buttonClass} onClick={() => void exportPng()} disabled={!building}>
-                            <span aria-hidden="true">⤓</span> {t("exportBtn")}
-                        </button>
-                    </div>
-                    <p className="px-1 pb-3 text-sm text-slate-500">{t(mode === "start" ? "hintStart" : "hintHazard")}</p>
+                    <p className="flex items-start gap-2 px-1 pb-3 text-sm text-slate-500">
+                        <span
+                            aria-hidden="true"
+                            className={cx(
+                                "mt-px grid size-5 shrink-0 place-items-center rounded-full text-[11px]",
+                                mode === "start" ? "bg-orange-100" : "bg-red-100",
+                            )}
+                        >
+                            {mode === "start" ? "📍" : "⛔"}
+                        </span>
+                        {t(mode === "start" ? "hintStart" : "hintHazard")}
+                    </p>
 
                     <div className="relative min-h-[460px] flex-1 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
                         {building ? (
-                            <BuildingMap
-                                ref={mapRef}
-                                building={building}
-                                hazards={hazards}
-                                start={start}
-                                route={route}
-                                mode={mode}
-                                lang={lang}
-                                t={t}
-                                onNodeActivate={handleNodeActivate}
-                                onEdgeToggle={handleEdgeToggle}
-                            />
+                            <>
+                                <BuildingMap
+                                    ref={mapRef}
+                                    building={building}
+                                    hazards={hazards}
+                                    start={start}
+                                    route={route}
+                                    mode={mode}
+                                    lang={lang}
+                                    t={t}
+                                    onNodeActivate={handleNodeActivate}
+                                    onEdgeToggle={handleEdgeToggle}
+                                />
+                                <RouteChip route={route} start={start} lang={lang} t={t} />
+
+                                {/* Floating tool palette (pattern from Higgsfield / Tana canvases on Mobbin). */}
+                                <div className="absolute inset-x-0 bottom-4 z-10 mx-auto flex w-fit max-w-[calc(100%-6rem)] flex-wrap justify-center whitespace-nowrap items-center gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-lg backdrop-blur">
+                                    <div role="group" aria-label={`${t("modeStart")} / ${t("modeHazard")}`} className="flex gap-1">
+                                        {(["start", "hazard"] as const).map((m) => (
+                                            <button
+                                                key={m}
+                                                type="button"
+                                                aria-pressed={mode === m}
+                                                onClick={() => setMode(m)}
+                                                className={cx(
+                                                    toolClass,
+                                                    mode === m
+                                                        ? m === "start"
+                                                            ? "bg-orange-500 text-white shadow"
+                                                            : "bg-red-600 text-white shadow"
+                                                        : "text-slate-600 hover:bg-slate-100",
+                                                )}
+                                            >
+                                                <span aria-hidden="true">{m === "start" ? "📍" : "⛔"}</span>
+                                                {t(m === "start" ? "modeStart" : "modeHazard")}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <span aria-hidden="true" className="mx-1 h-6 w-px bg-slate-200" />
+                                    <button type="button" onClick={reset} className={cx(toolClass, "text-slate-600 hover:bg-slate-100")}>
+                                        <span aria-hidden="true">↺</span> {t("resetBtn")}
+                                    </button>
+                                    <button type="button" onClick={() => void exportPng()} className={cx(toolClass, "text-slate-600 hover:bg-slate-100")}>
+                                        <span aria-hidden="true">⤓</span> {t("exportBtn")}
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <div className="absolute inset-0 grid place-items-center p-6 text-center">
                                 <div className="max-w-sm">
