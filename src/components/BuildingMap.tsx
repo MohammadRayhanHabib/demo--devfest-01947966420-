@@ -54,6 +54,15 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
     }, [route]);
 
     const unavailable = (id: string) => hazards.blockedNodes.has(id) || hazards.closedExits.has(id);
+    // Cumulative cost at each node along the route (shown in the card footer).
+    const costAt = new Map<string, number>();
+    if (route.status === "ok") {
+        let sum = 0;
+        route.path.forEach((id, i) => {
+            if (i > 0) sum += route.legs[i - 1];
+            costAt.set(id, sum);
+        });
+    }
 
     const nodes: MapFlowNode[] = building.data.nodes.map((node) => {
         const isBlocked = unavailable(node.id);
@@ -76,6 +85,10 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 isTarget: route.status === "ok" && route.exit === node.id,
                 ariaLabel: parts.join(", "),
                 startText: t("startTag"),
+                typeText: typeName,
+                bannerText: t(node.type === "exit" ? "closedExit" : "blockedNode"),
+                degree: localizeDigits(building.graph.adjacency.get(node.id)!.length, lang),
+                routeCost: costAt.has(node.id) ? localizeDigits(costAt.get(node.id)!, lang) : null,
                 onActivate: onNodeActivate,
             },
         };
@@ -124,7 +137,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
             wrapperRef.current!.classList.add("exporting");
             try {
                 const dataUrl = await toPng(viewportEl, {
-                    backgroundColor: "#f8fafc",
+                    backgroundColor: "#fafafa",
                     width,
                     height,
                     pixelRatio: 2,
@@ -155,7 +168,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 edgeTypes={edgeTypes}
                 nodeOrigin={[0.5, 0.5]}
                 fitView
-                fitViewOptions={{ padding: fitPadding, maxZoom: 1.15 }}
+                fitViewOptions={{ padding: fitPadding, maxZoom: 1 }}
                 minZoom={0.2}
                 maxZoom={2.5}
                 nodesDraggable={false}
@@ -168,7 +181,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                     flowRef.current = instance;
                 }}
             >
-                <Background variant={BackgroundVariant.Lines} gap={40} color="#e8edf3" />
+                <Background variant={BackgroundVariant.Dots} gap={20} size={1.4} color="#d4d4d8" />
                 <Controls showInteractive={false} position="bottom-right" />
             </ReactFlow>
         </div>

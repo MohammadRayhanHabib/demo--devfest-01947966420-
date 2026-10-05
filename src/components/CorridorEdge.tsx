@@ -1,4 +1,4 @@
-import { BaseEdge, EdgeLabelRenderer, getStraightPath, type Edge, type EdgeProps } from "@xyflow/react";
+import { BaseEdge, EdgeLabelRenderer, Position, getSmoothStepPath, type Edge, type EdgeProps } from "@xyflow/react";
 import { memo } from "react";
 import { cx } from "../lib/cx";
 import type { BuildingEdge } from "../lib/types";
@@ -21,15 +21,28 @@ export type CorridorData = {
 
 export type CorridorFlowEdge = Edge<CorridorData, "corridor">;
 
+/** Leave/enter through the sides facing each other, so lines run orthogonally. */
+function sides(dx: number, dy: number): [Position, Position] {
+    if (Math.abs(dx) >= Math.abs(dy)) return dx >= 0 ? [Position.Right, Position.Left] : [Position.Left, Position.Right];
+    return dy >= 0 ? [Position.Bottom, Position.Top] : [Position.Top, Position.Bottom];
+}
+
 export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<CorridorFlowEdge>) {
     const { id, sourceX, sourceY, targetX, targetY } = props;
     const data = props.data!;
-    const [path, labelX, labelY] = getStraightPath({ sourceX, sourceY, targetX, targetY });
-
-    const stroke = data.blocked ? "#e11d48" : data.onRoute ? "#a7f3d0" : "#94a3b8";
+    const [from, to] = sides(targetX - sourceX, targetY - sourceY);
+    const [path, labelX, labelY] = getSmoothStepPath({
+        sourceX,
+        sourceY,
+        sourcePosition: from,
+        targetX,
+        targetY,
+        targetPosition: to,
+        borderRadius: 16,
+    });
     const drawPath = data.reversed
-        ? `M${targetX},${targetY} L${sourceX},${sourceY}`
-        : `M${sourceX},${sourceY} L${targetX},${targetY}`;
+        ? getSmoothStepPath({ sourceX: targetX, sourceY: targetY, sourcePosition: to, targetX: sourceX, targetY: sourceY, targetPosition: from, borderRadius: 16 })[0]
+        : path;
 
     return (
         <>
@@ -38,21 +51,15 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                 path={path}
                 interactionWidth={24}
                 style={{
-                    stroke,
-                    strokeWidth: data.onRoute ? 9 : 4,
-                    strokeDasharray: data.blocked ? "8 6" : undefined,
-                    opacity: data.dead ? 0.3 : 1,
+                    stroke: data.blocked ? "#f43f5e" : data.onRoute ? "#a1a1aa" : "#d4d4d8",
+                    strokeWidth: data.onRoute ? 3.5 : 2.5,
+                    strokeDasharray: data.blocked ? "6 5" : undefined,
+                    opacity: data.dead ? 0.35 : 1,
                     transition: "stroke 0.25s, stroke-width 0.25s, opacity 0.25s",
                 }}
             />
             {data.onRoute && (
-                <path
-                    key={data.routeKey}
-                    d={drawPath}
-                    pathLength={1}
-                    className="route-draw"
-                    style={{ animationDelay: `${data.routeIndex * 140}ms` }}
-                />
+                <path key={data.routeKey} d={drawPath} pathLength={1} className="route-draw" style={{ animationDelay: `${data.routeIndex * 140}ms` }} />
             )}
             <EdgeLabelRenderer>
                 <button
@@ -62,14 +69,14 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                     title={data.ariaLabel}
                     style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`, pointerEvents: "all" }}
                     className={cx(
-                        "nodrag nopan absolute flex h-7 min-w-8 cursor-pointer items-center justify-center gap-0.5 rounded-full border-2 px-2.5",
-                        "text-sm font-bold tabular-nums shadow-sm outline-none transition-colors duration-200",
-                        "focus-visible:ring-4 focus-visible:ring-indigo-400",
+                        "nodrag nopan absolute flex h-6 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-md border px-1.5",
+                        "font-mono text-xs font-semibold tabular-nums shadow-sm outline-none transition-colors duration-200",
+                        "focus-visible:ring-4 focus-visible:ring-indigo-300",
                         data.blocked
-                            ? "border-rose-500 bg-rose-50 text-rose-700"
+                            ? "border-rose-300 bg-rose-50 text-rose-700"
                             : data.onRoute
-                              ? "border-emerald-600 bg-emerald-600 text-white"
-                              : "border-slate-300 bg-white text-slate-700 hover:border-slate-500",
+                              ? "border-zinc-900 bg-zinc-900 text-white"
+                              : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500",
                         data.dead && "opacity-40",
                     )}
                 >
