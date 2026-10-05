@@ -1,8 +1,8 @@
 import type { BuildingNode } from "./types";
 
 /** Footprint of a node card on the map (plus breathing room). */
-const CARD_W = 330;
-const CARD_H = 250;
+const CARD_W = 350;
+const CARD_H = 260;
 
 /**
  * Scale the file's display coordinates uniformly into a comfortable canvas so

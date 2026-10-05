@@ -53,7 +53,7 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                 path={path}
                 interactionWidth={22}
                 style={{
-                    stroke: data.blocked ? "#f43f5e" : data.onRoute ? "#dbe8fe" : "#94a3b8",
+                    stroke: data.blocked ? "#e11d48" : data.onRoute ? "#e5e5e5" : "#a3a3a3",
                     strokeWidth: data.onRoute ? 7 : 1.5,
                     strokeDasharray: data.blocked ? "5 5" : undefined,
                     opacity: data.dead ? 0.3 : receded ? 0.55 : 1,
@@ -76,14 +76,14 @@ export const CorridorEdge = memo(function CorridorEdge(props: EdgeProps<Corridor
                     title={data.ariaLabel}
                     style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`, pointerEvents: "all" }}
                     className={cx(
-                        "nodrag nopan absolute flex h-5 min-w-6 cursor-pointer items-center justify-center gap-0.5 rounded-md px-1.5",
-                        "font-mono text-[11px] font-semibold outline-none transition-[background-color,color,opacity] duration-300",
+                        "nodrag nopan absolute flex h-6 min-w-7 cursor-pointer items-center justify-center gap-0.5 rounded-md px-1.5",
+                        "font-mono text-[12.5px] font-semibold outline-none transition-[background-color,color,opacity] duration-300",
                         "focus-visible:ring-4 focus-visible:ring-brand-200",
                         data.blocked
                             ? "bg-rose-50 text-rose-700 ring-1 ring-rose-300"
                             : data.onRoute
-                              ? "bg-brand-600 text-white shadow-[0_2px_6px_-2px_rgba(37,99,235,0.6)]"
-                              : "bg-white text-slate-600 ring-1 ring-slate-200 hover:ring-slate-400",
+                              ? "bg-brand-600 text-white shadow-[0_2px_6px_-2px_rgba(10,10,10,0.5)]"
+                              : "bg-white text-neutral-700 ring-1 ring-neutral-300 hover:ring-neutral-500",
                         data.dead && "opacity-40",
                         receded && "opacity-70",
                     )}

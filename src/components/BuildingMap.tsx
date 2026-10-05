@@ -37,6 +37,8 @@ type Props = {
     onEdgeToggle: (id: string) => void;
     /** Keeps nodes clear of the floating rail, pill and inspector when fitting the view. */
     fitPadding?: FitViewOptions["padding"];
+    /** Phones: open zoomed onto the route instead of shrinking the whole building. */
+    compact?: boolean;
     ref?: Ref<MapHandle>;
 };
 
@@ -44,16 +46,16 @@ type Props = {
 function ZoomStack({ t, padding }: { t: Translate; padding: FitViewOptions["padding"] }) {
     const { zoomIn, zoomOut, fitView } = useReactFlow();
     const button =
-        "grid size-9 cursor-pointer place-items-center text-slate-600 transition-colors outline-none hover:bg-slate-50 hover:text-slate-900 focus-visible:ring-4 focus-visible:ring-brand-200";
-    const surface = "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)]";
+        "grid size-9 cursor-pointer place-items-center text-neutral-600 transition-colors outline-none hover:bg-neutral-50 hover:text-neutral-900 focus-visible:ring-4 focus-visible:ring-brand-200";
+    const surface = "overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)]";
     return (
-        <div className="absolute bottom-4 left-4 z-10 hidden flex-col gap-2 sm:flex">
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 sm:top-auto sm:right-auto sm:bottom-4 sm:left-4">
             <div className={surface}>
                 <button type="button" aria-label={t("fitView")} title={t("fitView")} onClick={() => void fitView({ padding, maxZoom: 1, duration: 350 })} className={button}>
                     <Maximize aria-hidden="true" className="size-4" />
                 </button>
             </div>
-            <div className={cx(surface, "flex flex-col divide-y divide-slate-100")}>
+            <div className={cx(surface, "flex flex-col divide-y divide-neutral-100")}>
                 <button type="button" aria-label={t("zoomIn")} title={t("zoomIn")} onClick={() => void zoomIn({ duration: 200 })} className={button}>
                     <Plus aria-hidden="true" className="size-4" />
                 </button>
@@ -65,7 +67,7 @@ function ZoomStack({ t, padding }: { t: Translate; padding: FitViewOptions["padd
     );
 }
 
-export function BuildingMap({ building, hazards, start, route, mode, lang, t, onNodeActivate, onEdgeToggle, fitPadding, ref }: Props) {
+export function BuildingMap({ building, hazards, start, route, mode, lang, t, onNodeActivate, onEdgeToggle, fitPadding, compact = false, ref }: Props) {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const flowRef = useRef<ReactFlowInstance<MapFlowNode, CorridorFlowEdge> | null>(null);
     const positions = useMemo(() => layoutPositions(building.data.nodes), [building]);
@@ -158,11 +160,15 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 isTarget,
                 ariaLabel: parts.join(", "),
                 pillText: isBlocked ? blockedText : isStart ? t("legendStart") : typeTitle,
-                typeText: typeName,
+                routeActive: route.status === "ok",
                 statusText: isBlocked ? blockedText : onRoute ? t("statusOnRoute") : t("stateOpen"),
                 detailText,
                 routeCost: costAt.has(node.id) ? num(costAt.get(node.id)!) : null,
-                degreeText: degreeText(building.graph.adjacency.get(node.id)!.length),
+                metaText:
+                    route.status === "ok" && onRoute
+                        ? t("stepOf", { n: step! + 1, total: route.path.length })
+                        : degreeText(building.graph.adjacency.get(node.id)!.length),
+                costLabel: t("costFromStart"),
                 ports: [...(ports.get(node.id) ?? [])],
                 routePorts: [...(routePorts.get(node.id) ?? [])],
                 onActivate: onNodeActivate,
@@ -218,7 +224,7 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
             wrapperRef.current!.classList.add("exporting");
             try {
                 const dataUrl = await toPng(viewportEl, {
-                    backgroundColor: "#f3f4f6",
+                    backgroundColor: "#f6f6f6",
                     width,
                     height,
                     pixelRatio: 2,
@@ -249,7 +255,12 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 edgeTypes={edgeTypes}
                 nodeOrigin={[0.5, 0.5]}
                 fitView
-                fitViewOptions={{ padding: fitPadding, maxZoom: 1 }}
+                fitViewOptions={
+                    compact && route.status === "ok"
+                        ? { padding: fitPadding, nodes: route.path.map((id) => ({ id })), minZoom: 0.6, maxZoom: 1 }
+                        : { padding: fitPadding, maxZoom: 1 }
+                }
+                attributionPosition={compact ? "bottom-left" : "top-right"}
                 minZoom={0.2}
                 maxZoom={2.5}
                 nodesDraggable={false}
@@ -261,9 +272,8 @@ export function BuildingMap({ building, hazards, start, route, mode, lang, t, on
                 onInit={(instance) => {
                     flowRef.current = instance;
                 }}
-                proOptions={{ hideAttribution: false }}
             >
-                <Background variant={BackgroundVariant.Dots} gap={16} size={1.2} color="#cfd4dc" bgColor="#f3f4f6" />
+                <Background variant={BackgroundVariant.Dots} gap={16} size={1.6} color="#b9b9b9" bgColor="#f6f6f6" />
                 <ZoomStack t={t} padding={fitPadding} />
             </ReactFlow>
         </div>
