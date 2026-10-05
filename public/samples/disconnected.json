@@ -1,0 +1,16 @@
+{
+  "building": "Disconnected wings (R2 has no exit, C9 starts blocked)",
+  "nodes": [
+    { "id": "R1", "label": "East Wing Room", "type": "room", "x": 100, "y": 100 },
+    { "id": "C1", "label": "East Hall", "type": "junction", "x": 300, "y": 100 },
+    { "id": "E1", "label": "East Exit", "type": "exit", "x": 500, "y": 100 },
+    { "id": "R2", "label": "West Wing Room", "type": "room", "x": 100, "y": 320 },
+    { "id": "C9", "label": "West Hall", "type": "junction", "x": 300, "y": 320 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "R1", "to": "C1", "cost": 3 },
+    { "id": "e2", "from": "C1", "to": "E1", "cost": 4 },
+    { "id": "e3", "from": "R2", "to": "C9", "cost": 2 }
+  ],
+  "initial_state": { "blocked_nodes": ["C9"], "blocked_edges": [], "closed_exits": [] }
+}

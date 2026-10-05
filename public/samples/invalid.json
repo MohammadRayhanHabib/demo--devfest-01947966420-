@@ -1,0 +1,15 @@
+{
+  "building": "Broken file (should be rejected)",
+  "nodes": [
+    { "id": "R1", "label": "Room", "type": "room", "x": 0, "y": 0 },
+    { "id": "E1", "label": "Exit", "type": "exit", "x": 100, "y": 0 },
+    { "id": "E1", "label": "Duplicate", "type": "exit", "x": 200, "y": 0 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "R1", "to": "E1", "cost": 0 },
+    { "id": "e2", "from": "E1", "to": "R1", "cost": 3 },
+    { "id": "e3", "from": "R1", "to": "R1", "cost": 1 },
+    { "id": "e4", "from": "R1", "to": "X9", "cost": 2 }
+  ],
+  "initial_state": { "blocked_nodes": ["E1"], "blocked_edges": ["nope"], "closed_exits": ["R1"] }
+}

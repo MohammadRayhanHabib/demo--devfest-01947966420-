@@ -1,0 +1,18 @@
+{
+  "building": "Tie-break test (expected from R1: R1 → C1 → E1, cost 4)",
+  "nodes": [
+    { "id": "R1", "label": "Start Room", "type": "room", "x": 100, "y": 220 },
+    { "id": "C2", "label": "Hall C2", "type": "junction", "x": 320, "y": 340 },
+    { "id": "C1", "label": "Hall C1", "type": "junction", "x": 320, "y": 100 },
+    { "id": "E2", "label": "Exit E2", "type": "exit", "x": 100, "y": 420 },
+    { "id": "E1", "label": "Exit E1", "type": "exit", "x": 540, "y": 220 }
+  ],
+  "edges": [
+    { "id": "a", "from": "R1", "to": "C2", "cost": 1 },
+    { "id": "b", "from": "R1", "to": "C1", "cost": 1 },
+    { "id": "c", "from": "C2", "to": "E1", "cost": 3 },
+    { "id": "d", "from": "C1", "to": "E1", "cost": 3 },
+    { "id": "f", "from": "R1", "to": "E2", "cost": 4 }
+  ],
+  "initial_state": { "blocked_nodes": [], "blocked_edges": [], "closed_exits": [] }
+}
