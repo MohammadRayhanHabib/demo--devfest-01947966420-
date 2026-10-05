@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { BuildingMap, type MapHandle } from "./components/BuildingMap";
-import { Ban, CircleCheck, Download, FileJson, MapPin, RotateCcw, Upload } from "lucide-react";
-import { ControlPanel, MapLegend } from "./components/Panels";
+import { Ban, Building2, CircleCheck, Download, FileJson, GitBranch, MapPin, RotateCcw, Sigma, TriangleAlert, Upload } from "lucide-react";
+import { Sidebar } from "./components/Panels";
 import { cx } from "./lib/cx";
-import { translate, type Lang, type Translate } from "./lib/i18n";
+import { localizeDigits, translate, type Lang, type Translate } from "./lib/i18n";
 import { buildGraph, findRoute } from "./lib/router";
 import type { Building, Hazards, LoadedBuilding, Mode, RouteResult, ValidationError } from "./lib/types";
 import { validateBuilding } from "./lib/validate";
@@ -239,199 +239,220 @@ export default function App() {
     };
 
     const isWide = useMediaQuery("(min-width: 1024px)");
-    // Keep nodes clear of the floating panel (left), legend (top) and toolbar (bottom).
-    const fitPadding = isWide ? ({ top: "120px", right: "70px", bottom: "150px", left: "490px" } as const) : 0.15;
+    // Keep node cards clear of the chip row (top) and the tool palette (bottom).
+    const fitPadding = isWide ? ({ top: "110px", right: "60px", bottom: "150px", left: "60px" } as const) : 0.12;
+    const openFilePicker = () => fileInputRef.current?.click();
 
     const button =
-        "inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition outline-none active:translate-y-px focus-visible:ring-4 focus-visible:ring-indigo-200";
+        "inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm font-medium transition outline-none active:translate-y-px focus-visible:ring-4 focus-visible:ring-indigo-200";
     const tool =
-        "flex cursor-pointer items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold whitespace-nowrap transition outline-none focus-visible:ring-4 focus-visible:ring-indigo-200";
+        "flex cursor-pointer items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium whitespace-nowrap transition outline-none focus-visible:ring-4 focus-visible:ring-indigo-200";
+    const crumbIcon = "grid size-7 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-600";
+    const chip = "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-mono text-sm";
 
     return (
-        <div className="flex min-h-dvh flex-col bg-slate-100 text-slate-900 lg:h-dvh lg:overflow-hidden">
-            {/* Top bar: brand + breadcrumb (pattern from OpenAI Platform on Mobbin). */}
-            <header className="relative z-30 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
-                <div className="flex min-w-0 items-center gap-3">
-                    <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="size-9 shrink-0" />
-                    <div className="min-w-0 leading-tight">
-                        <h1 className="flex min-w-0 items-center gap-2 text-[15px] font-bold text-slate-900">
-                            {t("title")}
+        <div className="min-h-dvh bg-zinc-100 text-zinc-900 sm:p-3 lg:h-dvh lg:p-4">
+            <div className="flex min-h-dvh flex-col overflow-hidden bg-white sm:min-h-[calc(100dvh-1.5rem)] sm:rounded-[26px] sm:border sm:border-zinc-200 sm:shadow-sm lg:h-full lg:min-h-0 lg:flex-row">
+                <Sidebar
+                    building={building}
+                    route={route}
+                    start={start}
+                    hazards={hazards}
+                    errors={errors}
+                    lang={lang}
+                    t={t}
+                    onImport={openFilePicker}
+                    onDismissErrors={() => setErrors([])}
+                    onStartChange={handleStartChange}
+                    onRemoveHazard={removeHazard}
+                />
+
+                <section className="order-first flex min-h-0 flex-1 flex-col lg:order-none">
+                    {/* Breadcrumb header (Projects / dashboard / Network pattern). */}
+                    <header className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-zinc-200 px-4">
+                        <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2.5 text-[15px]">
+                            <span aria-hidden="true" className={crumbIcon}>
+                                <Building2 className="size-4" />
+                            </span>
+                            <span className="hidden text-zinc-500 sm:inline">{t("breadcrumbRoot")}</span>
                             {building && (
                                 <>
-                                    <span aria-hidden="true" className="hidden text-slate-300 sm:inline">
+                                    <span aria-hidden="true" className="hidden text-zinc-300 sm:inline">
                                         /
                                     </span>
-                                    <span className="hidden truncate font-medium text-slate-600 sm:inline">{building.data.building}</span>
+                                    <span aria-hidden="true" className={cx(crumbIcon, "hidden md:grid")}>
+                                        <FileJson className="size-4" />
+                                    </span>
+                                    <span className="hidden truncate text-zinc-500 md:inline">{building.data.building}</span>
                                 </>
                             )}
-                        </h1>
-                        <p className="truncate text-xs text-slate-500">{t("subtitle")}</p>
-                    </div>
-                </div>
+                            <span aria-hidden="true" className="text-zinc-300">
+                                /
+                            </span>
+                            <h1 className="truncate font-medium text-zinc-900">{t("breadcrumbPage")}</h1>
+                        </nav>
 
-                <div className="flex shrink-0 items-center gap-2">
-                    <button
-                        type="button"
-                        className={cx(button, "border-slate-900 bg-slate-900 text-white hover:bg-slate-700")}
-                        onClick={() => fileInputRef.current?.click()}
-                    >
-                        <Upload aria-hidden="true" className="size-4" />
-                        <span className="hidden sm:inline">{t("importBtn")}</span>
-                    </button>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".json,application/json"
-                        className="hidden"
-                        onChange={(e) => {
-                            void handleFile(e.target.files?.[0]);
-                            e.target.value = "";
-                        }}
-                    />
-                    <button type="button" className={cx(button, "border-slate-200 bg-white text-slate-700 hover:bg-slate-50")} onClick={() => void loadSample()}>
-                        <FileJson aria-hidden="true" className="size-4" />
-                        <span className="hidden sm:inline">{t("sampleBtn")}</span>
-                    </button>
-                    <div role="group" aria-label="Language / ভাষা" className="flex rounded-xl bg-slate-100 p-1">
-                        {(["en", "bn"] as const).map((l) => (
-                            <button
-                                key={l}
-                                type="button"
-                                lang={l}
-                                aria-pressed={lang === l}
-                                onClick={() => setLang(l)}
-                                className={cx(
-                                    "cursor-pointer rounded-lg px-3 py-1.5 text-sm font-semibold transition outline-none focus-visible:ring-4 focus-visible:ring-indigo-200",
-                                    lang === l ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800",
-                                )}
-                            >
-                                {l === "en" ? "EN" : "বাংলা"}
+                        <div className="flex shrink-0 items-center gap-2">
+                            <button type="button" className={cx(button, "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-700")} onClick={openFilePicker}>
+                                <Upload aria-hidden="true" className="size-4" />
+                                <span className="hidden sm:inline">{t("importBtn")}</span>
                             </button>
-                        ))}
-                    </div>
-                </div>
-            </header>
-
-            {/* Full-bleed map with floating panels (pattern from komoot / Felt on Mobbin). */}
-            <main
-                className="relative flex flex-1 flex-col lg:block lg:min-h-0"
-                onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragging(true);
-                }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={onDrop}
-            >
-                <div className="relative h-[64vh] min-h-[440px] bg-slate-50 lg:absolute lg:inset-0 lg:h-auto">
-                    {building ? (
-                        <>
-                            <BuildingMap
-                                ref={mapRef}
-                                building={building}
-                                hazards={hazards}
-                                start={start}
-                                route={route}
-                                mode={mode}
-                                lang={lang}
-                                t={t}
-                                fitPadding={fitPadding}
-                                onNodeActivate={handleNodeActivate}
-                                onEdgeToggle={handleEdgeToggle}
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".json,application/json"
+                                className="hidden"
+                                onChange={(e) => {
+                                    void handleFile(e.target.files?.[0]);
+                                    e.target.value = "";
+                                }}
                             />
-
-                            <div className="absolute top-4 right-4 z-10 hidden md:block">
-                                <MapLegend t={t} />
+                            <button type="button" className={cx(button, "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50")} onClick={() => void loadSample()}>
+                                <FileJson aria-hidden="true" className="size-4" />
+                                <span className="hidden sm:inline">{t("sampleBtn")}</span>
+                            </button>
+                            <div role="group" aria-label="Language / ভাষা" className="flex rounded-xl border border-zinc-200 bg-zinc-50 p-0.5">
+                                {(["en", "bn"] as const).map((l) => (
+                                    <button
+                                        key={l}
+                                        type="button"
+                                        lang={l}
+                                        aria-pressed={lang === l}
+                                        onClick={() => setLang(l)}
+                                        className={cx(
+                                            "cursor-pointer rounded-lg px-2.5 py-1 text-sm font-medium transition outline-none focus-visible:ring-4 focus-visible:ring-indigo-200",
+                                            lang === l ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-800",
+                                        )}
+                                    >
+                                        {l === "en" ? "EN" : "বাংলা"}
+                                    </button>
+                                ))}
                             </div>
+                        </div>
+                    </header>
 
-                            {/* Floating tool palette (pattern from Higgsfield / Tana on Mobbin). */}
-                            <div className="pointer-events-none absolute inset-x-0 bottom-5 z-10 flex flex-col items-center gap-2 px-4 lg:left-[456px] xl:left-[476px]">
-                                <p
-                                    key={mode}
-                                    className="animate-fade-up max-w-xl rounded-full bg-slate-900/85 px-3.5 py-1.5 text-center text-xs font-medium text-white shadow backdrop-blur"
-                                >
-                                    {t(mode === "start" ? "hintStart" : "hintHazard")}
-                                </p>
-                                <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-xl shadow-slate-900/10 backdrop-blur">
-                                    <div role="group" aria-label={`${t("modeStart")} / ${t("modeHazard")}`} className="flex gap-1">
-                                        <button
-                                            type="button"
-                                            aria-pressed={mode === "start"}
-                                            onClick={() => setMode("start")}
-                                            className={cx(tool, mode === "start" ? "bg-blue-600 text-white shadow" : "text-slate-600 hover:bg-slate-100")}
-                                        >
-                                            <MapPin aria-hidden="true" className="size-4" /> {t("modeStart")}
+                    <div
+                        className="relative h-[62vh] min-h-[440px] bg-[#fafafa] lg:h-auto lg:min-h-0 lg:flex-1"
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            setDragging(true);
+                        }}
+                        onDragLeave={() => setDragging(false)}
+                        onDrop={onDrop}
+                    >
+                        {building ? (
+                            <>
+                                <BuildingMap
+                                    ref={mapRef}
+                                    building={building}
+                                    hazards={hazards}
+                                    start={start}
+                                    route={route}
+                                    mode={mode}
+                                    lang={lang}
+                                    t={t}
+                                    fitPadding={fitPadding}
+                                    onNodeActivate={handleNodeActivate}
+                                    onEdgeToggle={handleEdgeToggle}
+                                />
+
+                                {/* Context chips (source · route · cost), like "v_alpha001 · main · e5f6a7b". */}
+                                <div className="absolute top-4 left-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-1 rounded-xl border border-zinc-200 bg-white p-1 shadow-sm">
+                                    <span className={cx(chip, "text-zinc-900")}>
+                                        <span className="relative">
+                                            <FileJson aria-hidden="true" className="size-4 text-zinc-600" />
+                                            <span aria-hidden="true" className="absolute -top-0.5 -left-0.5 size-1.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                                        </span>
+                                        {building.source}
+                                    </span>
+                                    {route.status === "ok" && (
+                                        <>
+                                            <span key={route.path.join(">")} className={cx(chip, "animate-fade-up bg-zinc-50 text-zinc-500")}>
+                                                <GitBranch aria-hidden="true" className="size-4" />
+                                                {route.path[0]} → {route.exit}
+                                            </span>
+                                            <span className={cx(chip, "bg-zinc-50 text-zinc-500")}>
+                                                <Sigma aria-hidden="true" className="size-4" />
+                                                {localizeDigits(route.cost, lang)}
+                                            </span>
+                                        </>
+                                    )}
+                                    {(route.status === "no-route" || route.status === "start-blocked") && (
+                                        <span className={cx(chip, "animate-fade-up bg-rose-50 font-sans text-rose-700")}>
+                                            <TriangleAlert aria-hidden="true" className="size-4" />
+                                            {t(route.status === "no-route" ? "noRoute" : "startBlocked")}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Floating tool palette. */}
+                                <div className="pointer-events-none absolute inset-x-0 bottom-5 z-10 flex flex-col items-center gap-2 px-4">
+                                    <p key={mode} className="animate-fade-up max-w-xl rounded-full bg-zinc-900/85 px-3.5 py-1.5 text-center text-xs font-medium text-white shadow backdrop-blur">
+                                        {t(mode === "start" ? "hintStart" : "hintHazard")}
+                                    </p>
+                                    <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-1 rounded-2xl border border-zinc-200 bg-white p-1.5 shadow-lg shadow-zinc-900/5">
+                                        <div role="group" aria-label={`${t("modeStart")} / ${t("modeHazard")}`} className="flex gap-1">
+                                            <button
+                                                type="button"
+                                                aria-pressed={mode === "start"}
+                                                onClick={() => setMode("start")}
+                                                className={cx(tool, mode === "start" ? "bg-zinc-900 text-white shadow" : "text-zinc-600 hover:bg-zinc-100")}
+                                            >
+                                                <MapPin aria-hidden="true" className="size-4" /> {t("modeStart")}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                aria-pressed={mode === "hazard"}
+                                                onClick={() => setMode("hazard")}
+                                                className={cx(tool, mode === "hazard" ? "bg-rose-600 text-white shadow" : "text-zinc-600 hover:bg-zinc-100")}
+                                            >
+                                                <Ban aria-hidden="true" className="size-4" /> {t("modeHazard")}
+                                            </button>
+                                        </div>
+                                        <span aria-hidden="true" className="mx-1 h-6 w-px bg-zinc-200" />
+                                        <button type="button" onClick={reset} className={cx(tool, "text-zinc-600 hover:bg-zinc-100")}>
+                                            <RotateCcw aria-hidden="true" className="size-4" /> {t("resetBtn")}
                                         </button>
-                                        <button
-                                            type="button"
-                                            aria-pressed={mode === "hazard"}
-                                            onClick={() => setMode("hazard")}
-                                            className={cx(tool, mode === "hazard" ? "bg-rose-600 text-white shadow" : "text-slate-600 hover:bg-slate-100")}
-                                        >
-                                            <Ban aria-hidden="true" className="size-4" /> {t("modeHazard")}
+                                        <button type="button" onClick={() => void exportPng()} className={cx(tool, "text-zinc-600 hover:bg-zinc-100")}>
+                                            <Download aria-hidden="true" className="size-4" /> {t("exportBtn")}
                                         </button>
                                     </div>
-                                    <span aria-hidden="true" className="mx-1 h-6 w-px bg-slate-200" />
-                                    <button type="button" onClick={reset} className={cx(tool, "text-slate-600 hover:bg-slate-100")}>
-                                        <RotateCcw aria-hidden="true" className="size-4" /> {t("resetBtn")}
-                                    </button>
-                                    <button type="button" onClick={() => void exportPng()} className={cx(tool, "text-slate-600 hover:bg-slate-100")}>
-                                        <Download aria-hidden="true" className="size-4" /> {t("exportBtn")}
-                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="absolute inset-0 grid place-items-center p-6">
+                                <div className="max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 text-center shadow-sm">
+                                    <span className="mx-auto grid size-11 place-items-center rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-600">
+                                        <FileJson aria-hidden="true" className="size-5" />
+                                    </span>
+                                    <p className="mt-3 font-semibold">{t("emptyTitle")}</p>
+                                    <p className="mt-1 text-sm text-zinc-500">{t("emptyBody")}</p>
+                                    <div className="mt-4 flex justify-center gap-2">
+                                        <button type="button" className={cx(button, "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-700")} onClick={openFilePicker}>
+                                            <Upload aria-hidden="true" className="size-4" /> {t("importBtn")}
+                                        </button>
+                                        <button type="button" className={cx(button, "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50")} onClick={() => void loadSample()}>
+                                            {t("sampleBtn")}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </>
-                    ) : (
-                        <div className="absolute inset-0 grid place-items-center p-6 lg:pl-[476px]">
-                            <div className="max-w-sm rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-lg">
-                                <span className="mx-auto grid size-12 place-items-center rounded-full bg-emerald-50 text-emerald-600">
-                                    <FileJson aria-hidden="true" className="size-6" />
-                                </span>
-                                <p className="mt-3 text-lg font-bold">{t("emptyTitle")}</p>
-                                <p className="mt-1 text-sm text-slate-500">{t("emptyBody")}</p>
-                                <div className="mt-4 flex justify-center gap-2">
-                                    <button
-                                        type="button"
-                                        className={cx(button, "border-slate-900 bg-slate-900 text-white hover:bg-slate-700")}
-                                        onClick={() => fileInputRef.current?.click()}
-                                    >
-                                        <Upload aria-hidden="true" className="size-4" /> {t("importBtn")}
-                                    </button>
-                                    <button type="button" className={cx(button, "border-slate-200 bg-white text-slate-700 hover:bg-slate-50")} onClick={() => void loadSample()}>
-                                        {t("sampleBtn")}
-                                    </button>
-                                </div>
+                        )}
+
+                        {dragging && (
+                            <div className="pointer-events-none absolute inset-3 z-30 grid place-items-center rounded-2xl border-2 border-dashed border-zinc-400 bg-white/70">
+                                <p className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2 font-medium text-zinc-800 shadow-sm">
+                                    <Upload aria-hidden="true" className="size-4" /> {t("importBtn")}
+                                </p>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
+                </section>
+            </div>
 
-                    {dragging && (
-                        <div className="pointer-events-none absolute inset-3 z-30 grid place-items-center rounded-2xl border-4 border-dashed border-emerald-400 bg-emerald-50/70">
-                            <p className="flex items-center gap-2 rounded-full bg-white px-4 py-2 font-semibold text-emerald-700 shadow">
-                                <Upload aria-hidden="true" className="size-4" /> {t("importBtn")}
-                            </p>
-                        </div>
-                    )}
-                </div>
-
-                <div className="relative z-20 p-4 lg:absolute lg:inset-y-4 lg:left-4 lg:flex lg:w-[420px] lg:p-0 xl:w-[440px]">
-                    <ControlPanel
-                        building={building}
-                        route={route}
-                        start={start}
-                        hazards={hazards}
-                        errors={errors}
-                        lang={lang}
-                        t={t}
-                        onDismissErrors={() => setErrors([])}
-                        onStartChange={handleStartChange}
-                        onRemoveHazard={removeHazard}
-                    />
-                </div>
-            </main>
-
-            <div aria-live="polite" className="pointer-events-none fixed inset-x-0 top-20 z-40 flex justify-center px-4">
+            <div aria-live="polite" className="pointer-events-none fixed inset-x-0 top-6 z-40 flex justify-center px-4">
                 {toast && (
-                    <p key={toast.id} className="animate-fade-up flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg">
+                    <p key={toast.id} className="animate-fade-up flex items-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg">
                         <CircleCheck aria-hidden="true" className="size-4 text-emerald-400" />
                         {toast.text}
                     </p>
