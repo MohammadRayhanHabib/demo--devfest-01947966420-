@@ -72,13 +72,17 @@ sequence (case-sensitive, plain string comparison).
 
 ## UI design references (Mobbin)
 
-- Route header with status badge, meta chips and cost-by-corridor bar — Browserbase run view
+- Full-screen map with a floating route panel and A/B waypoints — komoot
+- Status line ("Route found") and breadcrumb top bar — OpenAI Platform
+- Cost-by-corridor bar — Browserbase run view
 - Itinerary-style route steps (start pin, numbered stops, arrival) — GetYourGuide
-- Floating map tool palette — Higgsfield / Tana canvases
+- Hazard alert cards with filter chips and Reopen — Nextdoor
+- Floating map legend — Felt
+- Floating map tool palette — Higgsfield / Tana
 
 ## Tech
 
-Vite · React 19 · TypeScript · Tailwind CSS 4 · React Flow (`@xyflow/react`) · Vitest
+Vite · React 19 · TypeScript · Tailwind CSS 4 · React Flow (`@xyflow/react`) · lucide-react · Vitest
 
 ## AI tools used
 
