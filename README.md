@@ -70,6 +70,12 @@ sequence (case-sensitive, plain string comparison).
 - Very dense graphs (close to 60 nodes) can have overlapping labels; zoom in to read them.
 - The PNG export uses system fonts.
 
+## UI design references (Mobbin)
+
+- Route header with status badge, meta chips and cost-by-corridor bar — Browserbase run view
+- Itinerary-style route steps (start pin, numbered stops, arrival) — GetYourGuide
+- Floating map tool palette — Higgsfield / Tana canvases
+
 ## Tech
 
 Vite · React 19 · TypeScript · Tailwind CSS 4 · React Flow (`@xyflow/react`) · Vitest
