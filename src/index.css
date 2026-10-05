@@ -3,6 +3,13 @@
 @theme {
     --font-sans: "Inter", "Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --color-brand-50: #eff5ff;
+    --color-brand-100: #dbe8fe;
+    --color-brand-200: #bfd5fe;
+    --color-brand-500: #3b7cf6;
+    --color-brand-600: #2563eb;
+    --color-brand-700: #1d4fd7;
+    --color-canvas: #f3f4f6;
     --animate-pop: pop 0.35s ease-out;
     --animate-fade-up: fade-up 0.3s ease-out both;
     --animate-grow-x: grow-x 0.4s ease-out both;
@@ -84,8 +91,8 @@ html[lang="bn"] .card-title {
 /* Route highlight draws itself along the path, edge by edge. */
 .route-draw {
     fill: none;
-    stroke: #4f46e5;
-    stroke-width: 4;
+    stroke: #2563eb;
+    stroke-width: 2.75;
     stroke-linecap: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
@@ -123,4 +130,50 @@ html[lang="bn"] .card-title {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* Browser surfaces carry the palette too. */
+::selection {
+    background: #dbe8fe;
+    color: #0f2a6b;
+}
+html {
+    scrollbar-color: #cbd5e1 transparent;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+}
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+}
+:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+select {
+    accent-color: #2563eb;
+}
+
+/* Port dots on node cards (React Flow handles restyled). */
+.port {
+    width: 9px !important;
+    height: 9px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    pointer-events: none;
+}
+.port.port-hidden {
+    opacity: 0;
+}
+.port.port-route {
+    border-color: #2563eb !important;
+    background: #2563eb !important;
 }
