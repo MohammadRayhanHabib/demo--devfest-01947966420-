@@ -2,6 +2,7 @@
 
 @theme {
     --font-sans: "Inter", "Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
     --animate-pop: pop 0.35s ease-out;
     --animate-fade-up: fade-up 0.3s ease-out both;
     --animate-grow-x: grow-x 0.4s ease-out both;
@@ -58,7 +59,7 @@ html[lang="bn"] body {
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--color-slate-500);
+    color: var(--color-zinc-500);
 }
 html[lang="bn"] .card-title {
     font-size: 0.875rem;
@@ -83,8 +84,8 @@ html[lang="bn"] .card-title {
 /* Route highlight draws itself along the path, edge by edge. */
 .route-draw {
     fill: none;
-    stroke: #10b981;
-    stroke-width: 8;
+    stroke: #18181b;
+    stroke-width: 3.5;
     stroke-linecap: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
